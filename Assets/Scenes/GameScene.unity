@@ -745,7 +745,7 @@ MonoBehaviour:
   playerHeight: 3
   whatIsGround:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!114 &765219809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1039,8 +1039,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
   orientation: {fileID: 1388197252}
-  sensX: 500
-  sensY: 500
+  sensX: 100
+  sensY: 100
 --- !u!114 &870339656
 MonoBehaviour:
   m_ObjectHideFlags: 0
