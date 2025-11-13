@@ -15,23 +15,25 @@ public class PlayerController : MonoBehaviour
     public float jumpForce;
     public float jumpCooldown;
     public float airMultiplier;
-    // bool readyToJump;
+    bool readyToJump;
 
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
     bool grounded;
+    bool groundTouch;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //readyToJump = true;
+        readyToJump = true;
     }
 
     void Update()
     {
         // ground check (casts a ray from current pos downwards, checks if it hits something)
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+        grounded = groundTouch == true;
+        //grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
 
         // handle drag
         if (grounded)
@@ -46,6 +48,7 @@ public class PlayerController : MonoBehaviour
         SpeedControl();
 
         //Debug.Log(rb.linearVelocity);
+        //Debug.Log(transform.position);
     }
 
     void FixedUpdate()
@@ -71,25 +74,25 @@ public class PlayerController : MonoBehaviour
         movementVector = val.Get<Vector2>();
     }
 
-    // public void OnJump()
-    // {
-    //     if (readyToJump && grounded)
-    //     {
-    //         readyToJump = false;
-    //         // reset y velocity
-    //         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+    public void OnJump()
+    {
+        if (readyToJump && grounded)
+        {
+            readyToJump = false;
+            // reset y velocity
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
 
-    //         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
 
-    //         // resets the readyToJump boolean after a set amount of time
-    //         Invoke(nameof(ResetJump), jumpCooldown);
-    //     }
-    // }
+            // resets the readyToJump boolean after a set amount of time
+            Invoke(nameof(ResetJump), jumpCooldown);
+        }
+    }
 
-    // void ResetJump()
-    // {
-    //     readyToJump = true;
-    // }
+    void ResetJump()
+    {
+        readyToJump = true;
+    }
 
     void SpeedControl()
     {
@@ -100,6 +103,22 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 limitedVelocity = flatVelocity.normalized * movementSpeed;
             rb.linearVelocity = new Vector3(limitedVelocity.x, rb.linearVelocity.y, limitedVelocity.z);
+        }
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        if (whatIsGround == (whatIsGround | (1 << collision.gameObject.layer)))
+        {
+            groundTouch = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (whatIsGround == (whatIsGround | (1 << collision.gameObject.layer)))
+        {
+            groundTouch = false;
         }
     }
 }
