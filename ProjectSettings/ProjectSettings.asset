@@ -921,11 +921,8 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: bc1549d6-c199-4281-9751-da7b0e443f91
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: DiggingGameJam2025
-  organizationId: jayhan20
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

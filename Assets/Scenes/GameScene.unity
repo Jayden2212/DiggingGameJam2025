@@ -440,6 +440,186 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 198473169}
   m_CullTransparentMesh: 1
+--- !u!1 &295713345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 295713350}
+  - component: {fileID: 295713349}
+  - component: {fileID: 295713348}
+  - component: {fileID: 295713347}
+  - component: {fileID: 295713346}
+  m_Layer: 6
+  m_Name: Terrain Chunk
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &295713346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295713345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cd16f2db5af41a43aec473000708abb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainChunk
+  orePrefabs:
+  - oreType: 4
+    prefab: {fileID: 1358232390471894224, guid: b2331957ef11b405d9c2fbfe4aadba40, type: 3}
+  - oreType: 5
+    prefab: {fileID: 3653720853350932017, guid: 35d078df0ecfe4a1e989e48d3310eb0a, type: 3}
+  terrainHeight: 38
+  terrainScale: 0.12
+  terrainAmplitude: 2
+  terrainSeed: 0
+  oreSettings:
+  - oreType: 4
+    threshold: 0.65
+    scale: 0.2
+    minY: 30
+    maxY: 36
+    seedOffset: 0
+  - oreType: 5
+    threshold: 0.68
+    scale: 0.25
+    minY: 20
+    maxY: 30
+    seedOffset: 50
+  subsurfaceLayers:
+  - name: Grass
+    depthStart: 0
+    depthEnd: 4
+    color: {r: 0.40784317, g: 0.6392157, b: 0.35686275, a: 1}
+    blendRange: 1
+    requiredToolTier: 0
+    hardness: 1
+    digEffectPrefab: {fileID: 0}
+  - name: Dirt
+    depthStart: 4
+    depthEnd: 10
+    color: {r: 0.4, g: 0.2705882, b: 0, a: 1}
+    blendRange: 1
+    requiredToolTier: 0
+    hardness: 1
+    digEffectPrefab: {fileID: 0}
+  - name: Stone
+    depthStart: 10
+    depthEnd: 20
+    color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    blendRange: 1
+    requiredToolTier: 1
+    hardness: 1
+    digEffectPrefab: {fileID: 0}
+  - name: Obsidian
+    depthStart: 20
+    depthEnd: 25
+    color: {r: 0.05, g: 0.05, b: 0.08, a: 1}
+    blendRange: 1
+    requiredToolTier: 2
+    hardness: 1
+    digEffectPrefab: {fileID: 0}
+--- !u!64 &295713347
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295713345}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
+--- !u!23 &295713348
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295713345}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: d80217931b3b9c6439849db7b5c0daa8, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &295713349
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295713345}
+  m_Mesh: {fileID: 0}
+--- !u!4 &295713350
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295713345}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.015, y: -39, z: -13.75}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &306833609
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1382,6 +1562,7 @@ Transform:
   - {fileID: 1558601155}
   - {fileID: 1388197252}
   - {fileID: 589208246}
+  - {fileID: 1607102721}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &765219807
@@ -1741,8 +1922,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
   orientation: {fileID: 1388197252}
-  sensX: 100
-  sensY: 100
+  sensX: 5
+  sensY: 5
 --- !u!114 &870339656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2597,6 +2778,67 @@ Transform:
   - {fileID: 1682914452}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1607102720
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1607102721}
+  - component: {fileID: 1607102722}
+  m_Layer: 0
+  m_Name: Dig Tool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1607102721
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1607102720}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 765219806}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1607102722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1607102720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662043806feb14944a92637d239205ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DigTool
+  digRadius: 2
+  digStrength: 25
+  digDistance: 20
+  toolTier: 5
+  upgradesPerTier: 5
+  strengthUpgradeAmount: 0.5
+  radiusUpgradeAmount: 0.2
+  distanceUpgradeAmount: 1
+  strengthUpgradeLevel: 0
+  radiusUpgradeLevel: 0
+  distanceUpgradeLevel: 0
+  totalUpgrades: 0
+  digCursorPrefab: {fileID: 0}
+  pointAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  digAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  aimMode: 1
+  aimOrigin: {fileID: 589208246}
 --- !u!4 &1673798748 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7326308086656437384, guid: 81d960fe44e3f6b46bcda7b24988e254, type: 3}
@@ -3424,3 +3666,4 @@ SceneRoots:
   - {fileID: 481231771}
   - {fileID: 1677462896}
   - {fileID: 558106413}
+  - {fileID: 295713350}
