@@ -4,11 +4,11 @@ using System.Collections.Generic;
 public class OreNode : MonoBehaviour
 {
     [Header("Ore Settings")]
-    public OreType oreType;
-    public int resourceAmount = 50;
+    public VoxelType oreType;
+    public int resourceAmount = 20;
     
     [Header("Connection Settings")]
-    public float checkRadius = 1.5f;
+    public float checkRadius = 0.5f;
     public float checkInterval = 0.5f;
     
     private TerrainChunk parentChunk;
@@ -106,11 +106,4 @@ public class OreNode : MonoBehaviour
         // Destroy after falling for a while
         Destroy(gameObject, 10f);
     }
-}
-
-public enum OreType
-{
-    Iron,
-    Copper,
-    Gold
 }
