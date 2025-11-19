@@ -14,6 +14,10 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] float noiseScale = 0.03f;
     [SerializeField] float heightMultiplier = 7;
 
+    [SerializeField] int octavesCount = 1;
+    [SerializeField] float lacunarity = 2f;
+    [SerializeField] float persistance = 0.5f;
+
     private Mesh mesh;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -48,7 +52,18 @@ public class TerrainGenerator : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++)
             {
-                float yPos = Mathf.PerlinNoise((x + xOffset) * noiseScale, (z + zOffset) * noiseScale) * heightMultiplier;
+                float yPos = 0;
+               
+                for (int o = 0; o < octavesCount; o++)
+                {
+                    float frequency = Mathf.Pow(lacunarity, o);
+                    float amplitude = Mathf.Pow(persistance, o);
+
+                    yPos += Mathf.PerlinNoise((x + xOffset) * noiseScale * frequency, (z + zOffset) * noiseScale * frequency) * amplitude;
+                }
+                
+                yPos *= heightMultiplier;
+
                 vertices[i] = new Vector3(x, yPos, z);
                 i++;
             }
@@ -97,6 +112,8 @@ public class TerrainGenerator : MonoBehaviour
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
+
+        GetComponent<MeshCollider>().sharedMesh = mesh;
     }
 
     /*

@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
-    bool grounded;
+    bool grounded = true;
     bool groundTouch;
 
     void Start()
@@ -32,8 +32,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // ground check (casts a ray from current pos downwards, checks if it hits something)
-        grounded = groundTouch == true;
-        //grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
+        // grounded = groundTouch == true;
+        // grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
 
         // handle drag
         if (grounded)
