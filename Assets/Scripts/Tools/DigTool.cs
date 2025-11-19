@@ -1,12 +1,60 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Tool for digging terrain with an upgrade system.
+/// 
+/// UPGRADE SYSTEM:
+/// - Each upgrade (Strength/Radius/Distance) costs 1 skill point
+/// - Every X upgrades (default 5) automatically increases tool tier
+/// - Tool tier determines which terrain layers can be dug
+/// 
+/// INTEGRATION:
+/// Call UpgradeStrength(), UpgradeRadius(), or UpgradeDistance() from your
+/// progression/UI system when player spends skill points.
+/// See PlayerProgressionSystem.cs for example integration.
+/// </summary>
 public class DigTool : MonoBehaviour
 {
     [Header("Digging Settings")]
     public float digRadius = 2f;
     public float digStrength = 5f;
     public float digDistance = 10f;
+    
+    [Header("Tool Upgrade")]
+    [Tooltip("Current tool tier (0 = basic, 1 = upgraded, etc.)")]
+    public int toolTier = 0;
+    
+    [Header("Upgrade System")]
+    [Tooltip("Number of total upgrades needed to increase tool tier")]
+    public int upgradesPerTier = 5;
+    
+    [Tooltip("How much each strength upgrade increases dig power")]
+    public float strengthUpgradeAmount = 0.5f;
+    
+    [Tooltip("How much each radius upgrade increases dig radius")]
+    public float radiusUpgradeAmount = 0.2f;
+    
+    [Tooltip("How much each distance upgrade increases dig distance")]
+    public float distanceUpgradeAmount = 1f;
+    
+    [Header("Current Upgrade Levels (Read Only)")]
+    [Tooltip("Number of times strength has been upgraded")]
+    public int strengthUpgradeLevel = 0;
+    
+    [Tooltip("Number of times radius has been upgraded")]
+    public int radiusUpgradeLevel = 0;
+    
+    [Tooltip("Number of times distance has been upgraded")]
+    public int distanceUpgradeLevel = 0;
+    
+    [Tooltip("Total number of upgrades purchased (used to calculate tier)")]
+    public int totalUpgrades = 0;
+    
+    // Base values (set on start)
+    private float baseStrength;
+    private float baseRadius;
+    private float baseDistance;
     
     [Header("Visual Feedback")]
     public GameObject digCursorPrefab; // Optional: sphere to show dig location
@@ -30,6 +78,11 @@ public class DigTool : MonoBehaviour
         mainCamera = Camera.main;
         Debug.Log("mainCamera: " + mainCamera);
         
+        // Store base values for upgrade calculations
+        baseStrength = digStrength;
+        baseRadius = digRadius;
+        baseDistance = digDistance;
+        
         if (digCursorPrefab != null)
         {
             digCursor = Instantiate(digCursorPrefab);
@@ -47,6 +100,214 @@ public class DigTool : MonoBehaviour
     {
         if (pointAction != null && pointAction.action != null) pointAction.action.Disable();
         if (digAction != null && digAction.action != null) digAction.action.Disable();
+    }
+    
+    // Call this method to upgrade the tool (e.g., from UI or inventory system)
+    public void UpgradeTool()
+    {
+        toolTier++;
+        Debug.Log($"Tool upgraded to tier {toolTier}");
+    }
+    
+    // Call this method to set tool tier directly
+    public void SetToolTier(int tier)
+    {
+        toolTier = Mathf.Max(0, tier);
+        Debug.Log($"Tool tier set to {toolTier}");
+    }
+    
+    // ===== UPGRADE SYSTEM METHODS =====
+    
+    /// <summary>
+    /// Upgrade the dig strength. Costs 1 skill point.
+    /// Returns true if upgrade was successful, false if not.
+    /// </summary>
+    public bool UpgradeStrength()
+    {
+        strengthUpgradeLevel++;
+        digStrength = baseStrength + (strengthUpgradeLevel * strengthUpgradeAmount);
+        
+        IncrementTotalUpgrades();
+        
+        Debug.Log($"Strength upgraded to level {strengthUpgradeLevel}! New strength: {digStrength:F1}");
+        return true;
+    }
+    
+    /// <summary>
+    /// Upgrade the dig radius. Costs 1 skill point.
+    /// Returns true if upgrade was successful, false if not.
+    /// </summary>
+    public bool UpgradeRadius()
+    {
+        radiusUpgradeLevel++;
+        digRadius = baseRadius + (radiusUpgradeLevel * radiusUpgradeAmount);
+        
+        // Update cursor size if it exists
+        if (digCursor != null)
+        {
+            digCursor.transform.localScale = Vector3.one * digRadius * 2f;
+        }
+        
+        IncrementTotalUpgrades();
+        
+        Debug.Log($"Radius upgraded to level {radiusUpgradeLevel}! New radius: {digRadius:F1}");
+        return true;
+    }
+    
+    /// <summary>
+    /// Upgrade the dig distance. Costs 1 skill point.
+    /// Returns true if upgrade was successful, false if not.
+    /// </summary>
+    public bool UpgradeDistance()
+    {
+        distanceUpgradeLevel++;
+        digDistance = baseDistance + (distanceUpgradeLevel * distanceUpgradeAmount);
+        
+        IncrementTotalUpgrades();
+        
+        Debug.Log($"Distance upgraded to level {distanceUpgradeLevel}! New distance: {digDistance:F1}");
+        return true;
+    }
+    
+    /// <summary>
+    /// Increments total upgrades and checks if tool tier should increase
+    /// </summary>
+    private void IncrementTotalUpgrades()
+    {
+        totalUpgrades++;
+        
+        // Calculate what tier we should be at based on total upgrades
+        int newTier = totalUpgrades / upgradesPerTier;
+        
+        // Check if we've reached a new tier
+        if (newTier > toolTier)
+        {
+            toolTier = newTier;
+            OnToolTierUp(toolTier);
+        }
+    }
+    
+    /// <summary>
+    /// Called when the tool tier increases. Override or add listeners for special effects.
+    /// </summary>
+    private void OnToolTierUp(int newTier)
+    {
+        Debug.Log($"★★★ TOOL TIER INCREASED TO {newTier}! ★★★");
+        // Add visual/audio feedback here (particle effect, sound, UI popup, etc.)
+        // Example: Play tier up animation, unlock new dig areas, etc.
+    }
+    
+    /// <summary>
+    /// Get the current upgrade progress toward the next tier
+    /// </summary>
+    public int GetUpgradesUntilNextTier()
+    {
+        return upgradesPerTier - (totalUpgrades % upgradesPerTier);
+    }
+    
+    /// <summary>
+    /// Get the progress percentage toward the next tier (0-1)
+    /// </summary>
+    public float GetTierProgressPercentage()
+    {
+        return (float)(totalUpgrades % upgradesPerTier) / upgradesPerTier;
+    }
+    
+    /// <summary>
+    /// Reset all upgrades (useful for testing or new game)
+    /// </summary>
+    public void ResetUpgrades()
+    {
+        strengthUpgradeLevel = 0;
+        radiusUpgradeLevel = 0;
+        distanceUpgradeLevel = 0;
+        totalUpgrades = 0;
+        toolTier = 0;
+        
+        digStrength = baseStrength;
+        digRadius = baseRadius;
+        digDistance = baseDistance;
+        
+        if (digCursor != null)
+        {
+            digCursor.transform.localScale = Vector3.one * digRadius * 2f;
+        }
+        
+        Debug.Log("All upgrades reset to base values");
+    }
+    
+    // ===== DEBUG/TESTING METHODS =====
+    
+    /// <summary>
+    /// Add skill points and upgrade stats (for testing)
+    /// </summary>
+    public void TestUpgradeSequence(int pointsToSpend)
+    {
+        Debug.Log($"=== Testing {pointsToSpend} upgrades ===");
+        
+        for (int i = 0; i < pointsToSpend; i++)
+        {
+            // Rotate through upgrades for testing
+            int upgradeType = i % 3;
+            switch (upgradeType)
+            {
+                case 0:
+                    UpgradeStrength();
+                    break;
+                case 1:
+                    UpgradeRadius();
+                    break;
+                case 2:
+                    UpgradeDistance();
+                    break;
+            }
+        }
+        
+        Debug.Log($"=== Test complete. Tier: {toolTier}, Total Upgrades: {totalUpgrades} ===");
+    }
+    
+    // Unity Editor Context Menu Commands (Right-click component in Inspector)
+    [ContextMenu("Upgrade Strength")]
+    private void DebugUpgradeStrength()
+    {
+        UpgradeStrength();
+    }
+    
+    [ContextMenu("Upgrade Radius")]
+    private void DebugUpgradeRadius()
+    {
+        UpgradeRadius();
+    }
+    
+    [ContextMenu("Upgrade Distance")]
+    private void DebugUpgradeDistance()
+    {
+        UpgradeDistance();
+    }
+    
+    [ContextMenu("Test 10 Upgrades")]
+    private void DebugTest10Upgrades()
+    {
+        TestUpgradeSequence(10);
+    }
+    
+    [ContextMenu("Reset All Upgrades")]
+    private void DebugResetUpgrades()
+    {
+        ResetUpgrades();
+    }
+    
+    [ContextMenu("Show Upgrade Info")]
+    private void DebugShowInfo()
+    {
+        Debug.Log($"=== TOOL UPGRADE INFO ===");
+        Debug.Log($"Tool Tier: {toolTier}");
+        Debug.Log($"Total Upgrades: {totalUpgrades}");
+        Debug.Log($"Strength Level: {strengthUpgradeLevel} (Current: {digStrength:F1})");
+        Debug.Log($"Radius Level: {radiusUpgradeLevel} (Current: {digRadius:F1})");
+        Debug.Log($"Distance Level: {distanceUpgradeLevel} (Current: {digDistance:F1})");
+        Debug.Log($"Upgrades until next tier: {GetUpgradesUntilNextTier()}");
+        Debug.Log($"Progress to next tier: {GetTierProgressPercentage() * 100:F0}%");
     }
     
     void Update()
@@ -101,7 +362,26 @@ public class DigTool : MonoBehaviour
                 TerrainChunk chunk = hit.collider.GetComponent<TerrainChunk>();
                 if (chunk != null)
                 {
-                    chunk.DigAtPosition(hit.point, digRadius, digStrength * Time.deltaTime);
+                    // Check if we can dig at this position based on tool tier
+                    SubsurfaceLayer layer = chunk.GetLayerAtPosition(hit.point);
+                    if (layer != null)
+                    {
+                        if (toolTier < layer.requiredToolTier)
+                        {
+                            // Tool too weak - show feedback (optional)
+                            Debug.Log($"Tool tier {toolTier} too weak for {layer.name} (requires tier {layer.requiredToolTier})");
+                            return;
+                        }
+                        
+                        // Apply hardness multiplier to dig strength
+                        float effectiveStrength = digStrength / layer.hardness;
+                        chunk.DigAtPosition(hit.point, digRadius, effectiveStrength * Time.deltaTime);
+                    }
+                    else
+                    {
+                        // No layer info, use default strength
+                        chunk.DigAtPosition(hit.point, digRadius, digStrength * Time.deltaTime);
+                    }
                 }
             }
         }

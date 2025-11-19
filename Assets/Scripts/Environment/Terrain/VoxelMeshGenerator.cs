@@ -21,7 +21,7 @@ public class VoxelMeshGenerator
         // Iterate through each cube in the grid
         for (int x = 0; x < VoxelData.ChunkSize; x++)
         {
-            for (int y = 0; y < VoxelData.ChunkSize; y++)
+            for (int y = 0; y < VoxelData.ChunkHeight; y++)
             {
                 for (int z = 0; z < VoxelData.ChunkSize; z++)
                 {
@@ -121,75 +121,77 @@ public class VoxelMeshGenerator
         // t = Mathf.Round(t * 4f) / 4f; // Uncomment for even chunkier vertices
         Vector3 pos = Vector3.Lerp(pos1, pos2, t);
 
-        // If subsurface layers are defined, use them to determine vertex color by Y position
-        float voxelY = pos.y / VoxelData.VoxelSize;
-        if (SubsurfaceLayers != null && SubsurfaceLayers.Count > 0)
+        // Check if this vertex is on an ore voxel - if so, use ore color instead of layer color
+        int vx1 = (int)MarchingCubesTable.CornerOffsets[corner1].x + Mathf.FloorToInt(cubePos.x / VoxelData.VoxelSize);
+        int vy1 = (int)MarchingCubesTable.CornerOffsets[corner1].y + Mathf.FloorToInt(cubePos.y / VoxelData.VoxelSize);
+        int vz1 = (int)MarchingCubesTable.CornerOffsets[corner1].z + Mathf.FloorToInt(cubePos.z / VoxelData.VoxelSize);
+        
+        // Bounds check for ore detection
+        if (vx1 >= 0 && vx1 < voxelData.voxelTypes.GetLength(0) &&
+            vy1 >= 0 && vy1 < voxelData.voxelTypes.GetLength(1) &&
+            vz1 >= 0 && vz1 < voxelData.voxelTypes.GetLength(2))
         {
-            // Find the layer that contains voxelY
-            SubsurfaceLayer found = null;
-            foreach (var layer in SubsurfaceLayers)
+            VoxelType vt = voxelData.voxelTypes[vx1, vy1, vz1];
+            
+            // If this is ore, use the hardcoded ore color instead of layer color
+            if (vt == VoxelType.IronOre || vt == VoxelType.CopperOre || vt == VoxelType.GoldOre)
             {
-                if (voxelY >= layer.minY && voxelY <= layer.maxY)
-                {
-                    found = layer;
-                    break;
-                }
-            }
-
-            if (found != null)
-            {
-                Color baseColor = found.color;
-
-                // Blend near edges if blend > 0
-                if (found.blend > 0f)
-                {
-                    float distToMin = voxelY - found.minY;
-                    float distToMax = found.maxY - voxelY;
-                    float nearest = Mathf.Min(distToMin, distToMax);
-
-                    if (nearest < found.blend)
-                    {
-                        // Find adjacent neighbor color (lower or upper)
-                        Color neighborColor = baseColor;
-                        if (distToMin < distToMax)
-                        {
-                            // near lower edge: find layer whose maxY < found.minY and closest
-                            int best = int.MinValue;
-                            SubsurfaceLayer lower = null;
-                            foreach (var l in SubsurfaceLayers)
-                            {
-                                if (l.maxY < found.minY && l.maxY > best)
-                                {
-                                    best = l.maxY;
-                                    lower = l;
-                                }
-                            }
-                            if (lower != null) neighborColor = lower.color;
-                        }
-                        else
-                        {
-                            // near upper edge: find layer whose minY > found.maxY and closest
-                            int best = int.MaxValue;
-                            SubsurfaceLayer upper = null;
-                            foreach (var l in SubsurfaceLayers)
-                            {
-                                if (l.minY > found.maxY && l.minY < best)
-                                {
-                                    best = l.minY;
-                                    upper = l;
-                                }
-                            }
-                            if (upper != null) neighborColor = upper.color;
-                        }
-
-                        float blendT = Mathf.Clamp01(nearest / found.blend);
-                        outColor = Color.Lerp(neighborColor, baseColor, blendT);
-                        return pos;
-                    }
-                }
-
-                outColor = baseColor;
+                outColor = VoxelTypeToColor(vt);
                 return pos;
+            }
+        }
+        
+        // Determine color based on subsurface layers using layer indices
+        if (SubsurfaceLayers != null && SubsurfaceLayers.Count > 0 && voxelData.layerIndices != null)
+        {
+            // Get voxel coordinates
+            int vx = (int)MarchingCubesTable.CornerOffsets[corner1].x + Mathf.FloorToInt(cubePos.x / VoxelData.VoxelSize);
+            int vy = (int)MarchingCubesTable.CornerOffsets[corner1].y + Mathf.FloorToInt(cubePos.y / VoxelData.VoxelSize);
+            int vz = (int)MarchingCubesTable.CornerOffsets[corner1].z + Mathf.FloorToInt(cubePos.z / VoxelData.VoxelSize);
+            
+            // Bounds check
+            if (vx >= 0 && vx < voxelData.layerIndices.GetLength(0) &&
+                vy >= 0 && vy < voxelData.layerIndices.GetLength(1) &&
+                vz >= 0 && vz < voxelData.layerIndices.GetLength(2))
+            {
+                int layerIdx = voxelData.layerIndices[vx, vy, vz];
+                
+                if (layerIdx >= 0 && layerIdx < SubsurfaceLayers.Count)
+                {
+                    SubsurfaceLayer layer = SubsurfaceLayers[layerIdx];
+                    Color baseColor = layer.color;
+                    
+                    // Calculate depth from surface for blending
+                    float surfaceHeight = voxelData.surfaceHeights[vx, vz, 0];
+                    float depthFromSurface = surfaceHeight - pos.y / VoxelData.VoxelSize;
+                    
+                    // Blend with adjacent layers if within blend range
+                    if (layer.blendRange > 0f)
+                    {
+                        float distToStart = Mathf.Abs(depthFromSurface - layer.depthStart);
+                        float distToEnd = Mathf.Abs(depthFromSurface - layer.depthEnd);
+                        
+                        // Blend at layer start
+                        if (distToStart < layer.blendRange && layerIdx > 0)
+                        {
+                            float blendT = distToStart / layer.blendRange;
+                            Color prevColor = SubsurfaceLayers[layerIdx - 1].color;
+                            outColor = Color.Lerp(prevColor, baseColor, blendT);
+                            return pos;
+                        }
+                        // Blend at layer end
+                        else if (distToEnd < layer.blendRange && layerIdx < SubsurfaceLayers.Count - 1)
+                        {
+                            float blendT = distToEnd / layer.blendRange;
+                            Color nextColor = SubsurfaceLayers[layerIdx + 1].color;
+                            outColor = Color.Lerp(nextColor, baseColor, blendT);
+                            return pos;
+                        }
+                    }
+                    
+                    outColor = baseColor;
+                    return pos;
+                }
             }
         }
 

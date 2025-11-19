@@ -767,7 +767,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662043806feb14944a92637d239205ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DigTool
-  digRadius: 3
+  digRadius: 1.5
   digStrength: 3
   digDistance: 10
   digCursorPrefab: {fileID: 0}

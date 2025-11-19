@@ -4,12 +4,27 @@ using UnityEngine;
 public class SubsurfaceLayer
 {
     public string name = "Layer";
-    [Tooltip("Inclusive minimum voxel Y (0 = bottom of chunk)")]
-    public int minY = 0;
-    [Tooltip("Inclusive maximum voxel Y")]
-    public int maxY = 0;
+    
+    [Tooltip("Depth from surface where this layer starts (0 = surface)")]
+    public float depthStart = 0f;
+    
+    [Tooltip("Depth from surface where this layer ends")]
+    public float depthEnd = 5f;
+    
     [Tooltip("Display color for this layer")]
     public Color color = Color.white;
-    [Tooltip("Blend range in voxels near the layer edges for smooth transitions")]
-    public float blend = 0f;
+    
+    [Tooltip("Blend range near layer edges for smooth color transitions")]
+    public float blendRange = 1f;
+    
+    [Header("Digging Properties")]
+    [Tooltip("Minimum tool tier required to dig this layer (0 = basic, 1 = upgraded, etc.)")]
+    public int requiredToolTier = 0;
+    
+    [Tooltip("How resistant this layer is to digging (multiplier on dig time)")]
+    [Range(0.1f, 10f)]
+    public float hardness = 1f;
+    
+    [Tooltip("Visual effect to play when digging this layer (optional)")]
+    public GameObject digEffectPrefab;
 }
