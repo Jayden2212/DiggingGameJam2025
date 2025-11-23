@@ -50,12 +50,15 @@ public class TerrainChunk : MonoBehaviour
     public int terrainSeed = 0;
     
     [Header("Ore Generation (Edit in List Below)")]
-    [Tooltip("Configure all ore types here. Order matters - first matching ore wins!")]
+    [Tooltip("Configure all ore types here. Order matters - first matching ore wins!\n\nTo spawn MORE ore: LOWER the threshold (try 0.5)\nTo spawn LESS ore: RAISE the threshold (try 0.75)")]
     public List<OreGenerationSettings> oreSettings = new List<OreGenerationSettings>()
     {
-        new OreGenerationSettings(VoxelType.IronOre, 0.65f, 0.2f, 5, 30, 0f),
-        new OreGenerationSettings(VoxelType.CopperOre, 0.68f, 0.25f, 8, 35, 50f),
-        // Add more ores here: new OreGenerationSettings(VoxelType.GoldOre, 0.75f, 0.18f, 2, 15, 100f),
+        // Iron - Common (low threshold = more spawns)
+        new OreGenerationSettings(VoxelType.IronOre, 0.55f, 0.2f, 5, 30, 0f),
+        // Copper - Uncommon (medium threshold)
+        new OreGenerationSettings(VoxelType.CopperOre, 0.65f, 0.25f, 8, 35, 50f),
+        // Gold - Rare (high threshold = less spawns, smaller veins, deeper)
+        // new OreGenerationSettings(VoxelType.GoldOre, 0.75f, 0.18f, 2, 15, 100f),
     };
 
     [Header("━━━━━━━━━━ LAYER SYSTEM ━━━━━━━━━━")]
@@ -216,8 +219,8 @@ public class TerrainChunk : MonoBehaviour
                     {
                         Vector3 worldPos = transform.TransformPoint(new Vector3(x, y, z) * VoxelData.VoxelSize);
                         
-                        // Use random rotation for variety (or use prefab's rotation if preferred)
-                        Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                        // Rotate -90 on X axis to fix orientation, random Y rotation for variety
+                        Quaternion rotation = Quaternion.Euler(-90f, Random.Range(0f, 360f), 0f);
                         GameObject ore = Instantiate(orePrefabDict[vt], worldPos, rotation, transform);
                         
                         // Set the ore type on the OreNode component

@@ -480,16 +480,16 @@ MonoBehaviour:
   terrainHeight: 38
   terrainScale: 0.12
   terrainAmplitude: 2
-  terrainSeed: 0
+  terrainSeed: 1
   oreSettings:
   - oreType: 4
-    threshold: 0.65
+    threshold: 0.425
     scale: 0.2
     minY: 30
     maxY: 36
     seedOffset: 0
   - oreType: 5
-    threshold: 0.68
+    threshold: 0.425
     scale: 0.25
     minY: 20
     maxY: 30

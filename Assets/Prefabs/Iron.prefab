@@ -123,6 +123,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OreNode
   oreType: 0
-  resourceAmount: 20
+  resourceAmount: 100
   checkRadius: 0.5
   checkInterval: 0.5

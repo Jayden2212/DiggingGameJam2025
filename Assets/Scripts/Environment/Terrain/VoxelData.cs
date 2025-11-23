@@ -17,10 +17,14 @@ public enum VoxelType
 public class OreGenerationSettings
 {
     public VoxelType oreType;
+    
+    [Header("Ore Abundance")]
     [Range(0f, 1f)]
-    [Tooltip("Higher value = less ore spawns (threshold for spawning)")]
+    [Tooltip("LOWER = More Ore | HIGHER = Less Ore\nRare: 0.7-0.8 | Common: 0.5-0.6 | Abundant: 0.3-0.5")]
     public float threshold = 0.65f;
-    [Tooltip("Scale of ore noise patterns (smaller = bigger veins)")]
+    
+    [Tooltip("Vein Size: SMALLER value = BIGGER veins | Common range: 0.1-0.3")]
+    [Range(0.05f, 0.5f)]
     public float scale = 0.2f;
     [Tooltip("Minimum Y level for this ore")]
     public int minY = 0;
