@@ -473,60 +473,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainChunk
   orePrefabs:
-  - oreType: 4
+  - oreType: 8
     prefab: {fileID: 1358232390471894224, guid: b2331957ef11b405d9c2fbfe4aadba40, type: 3}
-  - oreType: 5
+  - oreType: 7
     prefab: {fileID: 3653720853350932017, guid: 35d078df0ecfe4a1e989e48d3310eb0a, type: 3}
-  terrainHeight: 38
+  - oreType: 9
+    prefab: {fileID: 882122156316036897, guid: 7e0b806e8933140b89eba8e73d326af8, type: 3}
+  - oreType: 10
+    prefab: {fileID: 5578729043900162879, guid: 4e53c638f4d58499cbedec4574768dca, type: 3}
+  - oreType: 11
+    prefab: {fileID: 2325772498063498406, guid: ee6c42c826667444f934d8378f31b86e, type: 3}
+  oreSpawnBorderMargin: 2
+  terrainHeight: 38.75
   terrainScale: 0.12
-  terrainAmplitude: 2
+  terrainAmplitude: 1.25
   terrainSeed: 1
   oreSettings:
-  - oreType: 4
-    threshold: 0.425
-    scale: 0.2
+  - oreType: 7
+    threshold: 0.2
+    scale: 0.465
     minY: 30
     maxY: 36
     seedOffset: 0
-  - oreType: 5
-    threshold: 0.425
-    scale: 0.25
+  - oreType: 8
+    threshold: 0.2
+    scale: 0.465
     minY: 20
     maxY: 30
     seedOffset: 50
-  subsurfaceLayers:
-  - name: Grass
-    depthStart: 0
-    depthEnd: 4
-    color: {r: 0.40784317, g: 0.6392157, b: 0.35686275, a: 1}
-    blendRange: 1
-    requiredToolTier: 0
-    hardness: 1
-    digEffectPrefab: {fileID: 0}
-  - name: Dirt
-    depthStart: 4
-    depthEnd: 10
-    color: {r: 0.4, g: 0.2705882, b: 0, a: 1}
-    blendRange: 1
-    requiredToolTier: 0
-    hardness: 1
-    digEffectPrefab: {fileID: 0}
-  - name: Stone
-    depthStart: 10
-    depthEnd: 20
-    color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    blendRange: 1
-    requiredToolTier: 1
-    hardness: 1
-    digEffectPrefab: {fileID: 0}
-  - name: Obsidian
-    depthStart: 20
-    depthEnd: 25
-    color: {r: 0.05, g: 0.05, b: 0.08, a: 1}
-    blendRange: 1
-    requiredToolTier: 2
-    hardness: 1
-    digEffectPrefab: {fileID: 0}
+  - oreType: 9
+    threshold: 0.2
+    scale: 0.465
+    minY: 20
+    maxY: 30
+    seedOffset: 50
+  - oreType: 10
+    threshold: 0.2
+    scale: 0.465
+    minY: 20
+    maxY: 30
+    seedOffset: 50
+  - oreType: 11
+    threshold: 0.2
+    scale: 0.465
+    minY: 20
+    maxY: 30
+    seedOffset: 50
+  subsurfaceLayers: []
 --- !u!64 &295713347
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -4,12 +4,17 @@ using System.Collections.Generic;
 public enum VoxelType
 {
     Air,
+    Grass,
     Dirt,
-    Stone,
-    Obsidian,
-    IronOre,
+    LimeStone,
+    Granite,
+    Bedrock,
+    Molten,
     CopperOre,
+    IronOre,
     GoldOre,
+    AmethystOre,
+    DiamondOre
     // Add more ore types as needed
 }
 
@@ -122,8 +127,8 @@ public class VoxelData
                     // Determine voxel type based on density and position
                     if (densityMap[x, y, z] > 0)
                     {
-                        // Default to stone
-                        voxelTypes[x, y, z] = VoxelType.Stone;
+                        // Default to granite (main terrain rock)
+                        voxelTypes[x, y, z] = VoxelType.Granite;
                         
                         // Default layer index (will be set by TerrainChunk if layers are provided)
                         layerIndices[x, y, z] = 0;
@@ -146,11 +151,11 @@ public class VoxelData
                                 }
                             }
                         }
-                        
-                        // Top layer is dirt (if still stone)
+
+                        // Top layer is soil (if still granite and no ore)
                         if (depthFromSurface >= -0.5f && depthFromSurface <= 2f)
                         {
-                            if (voxelTypes[x, y, z] == VoxelType.Stone)
+                            if (voxelTypes[x, y, z] == VoxelType.Granite)
                             {
                                 voxelTypes[x, y, z] = VoxelType.Dirt;
                             }
@@ -209,19 +214,26 @@ public class VoxelData
     // Helper method to calculate 3D ore noise
     private float Calculate3DOreNoise(int x, int y, int z, float seedX, float seedZ, float scale, float offset)
     {
-        // Use 3D Perlin noise by multiplying two 2D noise samples
-        // This creates more natural vein-like patterns
+        // Use true 3D noise by combining three 2D noise samples across different axes
+        // This creates more natural, volumetric vein patterns instead of flat horizontal veins
+        
         float noise1 = Mathf.PerlinNoise(
             (x + seedX + offset) * scale,
-            (y + seedX * 0.5f + offset) * scale
+            (y + offset) * scale  // Full Y weight for vertical variation
         );
         
         float noise2 = Mathf.PerlinNoise(
             (z + seedZ + offset) * scale,
-            (y + seedZ * 0.7f + offset) * scale
+            (y + offset * 1.3f) * scale  // Full Y weight, different offset for variety
         );
         
-        return noise1 * noise2;
+        float noise3 = Mathf.PerlinNoise(
+            (x + offset * 0.7f) * scale,
+            (z + offset * 1.7f) * scale  // X-Z plane for additional 3D structure
+        );
+        
+        // Multiply all three for truly volumetric veins
+        return noise1 * noise2 * noise3;
     }
     
     public void ModifyDensity(Vector3 localPosition, float radius, float strength)

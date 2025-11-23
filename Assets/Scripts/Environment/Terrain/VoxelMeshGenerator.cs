@@ -134,7 +134,8 @@ public class VoxelMeshGenerator
             VoxelType vt = voxelData.voxelTypes[vx1, vy1, vz1];
             
             // If this is ore, use the hardcoded ore color instead of layer color
-            if (vt == VoxelType.IronOre || vt == VoxelType.CopperOre || vt == VoxelType.GoldOre)
+            if (vt == VoxelType.CopperOre || vt == VoxelType.IronOre || vt == VoxelType.GoldOre || 
+                vt == VoxelType.AmethystOre || vt == VoxelType.DiamondOre)
             {
                 outColor = VoxelTypeToColor(vt);
                 return pos;
@@ -220,11 +221,21 @@ public class VoxelMeshGenerator
     {
         switch (vt)
         {
-            case VoxelType.Dirt: return new Color(0.62f, 0.45f, 0.27f, 1f); // brown
-            case VoxelType.Stone: return new Color(0.5f, 0.5f, 0.5f, 1f); // gray
-            case VoxelType.IronOre: return new Color(0.4f, 0.1f, 0.1f, 1f); // dark red
-            case VoxelType.CopperOre: return new Color(0.8f, 0.45f, 0.2f, 1f); // orange
-            case VoxelType.GoldOre: return new Color(0.9f, 0.8f, 0.2f, 1f); // yellow
+            // Terrain Types
+            case VoxelType.Grass: return new Color(0.4f, 0.6f, 0.3f, 1f); // green grass
+            case VoxelType.Dirt: return new Color(0.55f, 0.40f, 0.25f, 1f); // brown soil
+            case VoxelType.LimeStone: return new Color(0.75f, 0.72f, 0.60f, 1f); // yellow-grey limestone
+            case VoxelType.Granite: return new Color(0.35f, 0.35f, 0.38f, 1f); // dark grey granite
+            case VoxelType.Bedrock: return new Color(0.15f, 0.15f, 0.15f, 1f); // black bedrock
+            case VoxelType.Molten: return new Color(0.9f, 0.3f, 0.1f, 1f); // orange-red molten
+            
+            // Ore Types
+            case VoxelType.CopperOre: return new Color(0.72f, 0.45f, 0.20f, 1f); // shiny copper
+            case VoxelType.IronOre: return new Color(0.65f, 0.65f, 0.68f, 1f); // shiny grey iron
+            case VoxelType.GoldOre: return new Color(1.0f, 0.84f, 0.0f, 1f); // gold/yellow
+            case VoxelType.AmethystOre: return new Color(0.68f, 0.40f, 0.72f, 1f); // purple-pink amethyst
+            case VoxelType.DiamondOre: return new Color(0.68f, 0.85f, 0.90f, 1f); // light blue-ish diamond
+            
             case VoxelType.Air: return Color.clear;
             default: return Color.magenta;
         }
