@@ -473,10 +473,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainChunk
   orePrefabs:
-  - oreType: 8
-    prefab: {fileID: 1358232390471894224, guid: b2331957ef11b405d9c2fbfe4aadba40, type: 3}
   - oreType: 7
     prefab: {fileID: 3653720853350932017, guid: 35d078df0ecfe4a1e989e48d3310eb0a, type: 3}
+  - oreType: 8
+    prefab: {fileID: 1358232390471894224, guid: b2331957ef11b405d9c2fbfe4aadba40, type: 3}
   - oreType: 9
     prefab: {fileID: 882122156316036897, guid: 7e0b806e8933140b89eba8e73d326af8, type: 3}
   - oreType: 10
@@ -484,42 +484,90 @@ MonoBehaviour:
   - oreType: 11
     prefab: {fileID: 2325772498063498406, guid: ee6c42c826667444f934d8378f31b86e, type: 3}
   oreSpawnBorderMargin: 2
-  terrainHeight: 38.75
+  terrainHeight: 39
   terrainScale: 0.12
-  terrainAmplitude: 1.25
-  terrainSeed: 1
+  terrainAmplitude: 1
+  terrainSeed: -1
   oreSettings:
   - oreType: 7
-    threshold: 0.2
+    threshold: 0.225
     scale: 0.465
-    minY: 30
-    maxY: 36
+    minY: 25
+    maxY: 37
     seedOffset: 0
   - oreType: 8
-    threshold: 0.2
+    threshold: 0.25
     scale: 0.465
-    minY: 20
+    minY: 15
     maxY: 30
     seedOffset: 50
   - oreType: 9
-    threshold: 0.2
+    threshold: 0.25
     scale: 0.465
-    minY: 20
-    maxY: 30
-    seedOffset: 50
+    minY: 10
+    maxY: 25
+    seedOffset: 100
   - oreType: 10
-    threshold: 0.2
+    threshold: 0.275
     scale: 0.465
-    minY: 20
-    maxY: 30
-    seedOffset: 50
+    minY: 5
+    maxY: 20
+    seedOffset: 150
   - oreType: 11
-    threshold: 0.2
+    threshold: 0.3
     scale: 0.465
-    minY: 20
-    maxY: 30
-    seedOffset: 50
-  subsurfaceLayers: []
+    minY: 2
+    maxY: 12
+    seedOffset: 200
+  subsurfaceLayers:
+  - name: Grass
+    depthStart: 0
+    depthEnd: 2
+    color: {r: 0.42352942, g: 0.61960787, b: 0.18431373, a: 1}
+    blendRange: 0.5
+    requiredToolTier: 0
+    hardness: 1
+    digEffectPrefab: {fileID: 0}
+  - name: Soil
+    depthStart: 2
+    depthEnd: 4
+    color: {r: 0.55, g: 0.4, b: 0.25, a: 1}
+    blendRange: 0.5
+    requiredToolTier: 0
+    hardness: 1
+    digEffectPrefab: {fileID: 0}
+  - name: Limestone
+    depthStart: 4
+    depthEnd: 10
+    color: {r: 0.75, g: 0.72, b: 0.6, a: 1}
+    blendRange: 1
+    requiredToolTier: 0
+    hardness: 1.5
+    digEffectPrefab: {fileID: 0}
+  - name: Granite
+    depthStart: 10
+    depthEnd: 25
+    color: {r: 0.35, g: 0.35, b: 0.38, a: 1}
+    blendRange: 1
+    requiredToolTier: 1
+    hardness: 3
+    digEffectPrefab: {fileID: 0}
+  - name: Deep Granite
+    depthStart: 25
+    depthEnd: 35
+    color: {r: 0.25, g: 0.25, b: 0.28, a: 1}
+    blendRange: 0.8
+    requiredToolTier: 2
+    hardness: 5
+    digEffectPrefab: {fileID: 0}
+  - name: Bedrock
+    depthStart: 35
+    depthEnd: 100
+    color: {r: 0.15, g: 0.15, b: 0.15, a: 1}
+    blendRange: 0.5
+    requiredToolTier: 3
+    hardness: 10
+    digEffectPrefab: {fileID: 0}
 --- !u!64 &295713347
 MeshCollider:
   m_ObjectHideFlags: 0
