@@ -14,10 +14,10 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_Fog: 1
+  m_FogColor: {r: 0.7372549, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.007
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: cc421da483ed06c49933077a621bff25, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: bc4c4f7920ba64a81a267d8f2e597cfe, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -743,7 +743,6 @@ GameObject:
   - component: {fileID: 523719396}
   - component: {fileID: 523719395}
   - component: {fileID: 523719394}
-  - component: {fileID: 523719398}
   m_Layer: 0
   m_Name: Player (1)
   m_TagString: Untagged
@@ -863,23 +862,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!114 &523719398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 523719392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9f4b9eb5d87341d2aa80b0177f1029b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Swing
-  tool: {fileID: 1381835522}
-  animator: {fileID: 1381835525}
-  swingStateName: Swing
-  idleStateName: New State
-  fallbackDuration: 1
 --- !u!1 &597110522
 GameObject:
   m_ObjectHideFlags: 0
@@ -1111,6 +1093,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a230752f304ee4ae9bc1fcd8f937fa67, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1381835525}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a230752f304ee4ae9bc1fcd8f937fa67, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1381835526}
   m_SourcePrefab: {fileID: 100100000, guid: a230752f304ee4ae9bc1fcd8f937fa67, type: 3}
 --- !u!1 &756405543
 GameObject:
@@ -1717,6 +1702,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1381835526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381835522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9f4b9eb5d87341d2aa80b0177f1029b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Swing
+  clickAction: {fileID: 3001919216989983466, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1 &1643466474
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,73 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Swing : MonoBehaviour
 {
-
-    public GameObject tool;
-
-    [Tooltip("Animator on the tool (optional). If not set, will try to get one from the 'tool' GameObject.")]
-    public Animator animator;
-
-    [Tooltip("Name of the swing animation state/clip to play.")]
-    public string swingStateName = "Swing";
-
-    [Tooltip("Optional state to return to after swing (can be empty).")]
-    public string idleStateName = "New State";
-
-    [Tooltip("Fallback duration (seconds) to wait if clip length can't be determined.")]
-    public float fallbackDuration = 1f;
-
-    bool isAnimating = false;
+    Animator anim;
+    [SerializeField] private InputActionReference clickAction;
 
     void Start()
     {
-        if (animator == null && tool != null)
-            animator = tool.GetComponent<Animator>();
+        anim = GetComponent<Animator>();
     }
 
-    // Call this method when a click/input is registered
-    public void OnClick()
+    private void OnEnable()
     {
-        if (isAnimating) return;
-        StartCoroutine(ToolSwing());
+        if (clickAction != null && clickAction.action != null)
+        {
+            clickAction.action.Enable();
+            clickAction.action.performed += OnClickPerformed;
+            clickAction.action.canceled += OnClickCanceled;
+        }
     }
 
-    System.Collections.IEnumerator ToolSwing()
+    private void OnDisable()
     {
-        if (animator == null)
-            yield break;
-
-        isAnimating = true;
-        animator.SetBool("isMining", true);
-        
-        // Play the swing state if available
-        animator.Play(swingStateName);
-
-        // Try to determine clip length for the state
-        float waitTime = fallbackDuration;
-        var controller = animator.runtimeAnimatorController;
-        if (controller != null)
+        if (clickAction != null && clickAction.action != null)
         {
-            foreach (var clip in controller.animationClips)
-            {
-                if (clip != null && clip.name == swingStateName)
-                {
-                    waitTime = clip.length;
-                    break;
-                }
-            }
+            clickAction.action.performed -= OnClickPerformed;
+            clickAction.action.canceled -= OnClickCanceled;
+            clickAction.action.Disable();
         }
+    }
 
-        yield return new WaitForSeconds(waitTime);
-
-        if (!string.IsNullOrEmpty(idleStateName))
-        {
-            animator.Play(idleStateName);
-        }
-    
-        isAnimating = false;
-        animator.SetBool("isMining", false);
+    private void OnClickPerformed(InputAction.CallbackContext ctx)
+    {
+        anim.SetTrigger("Mining");
+    }
+    private void OnClickCanceled(InputAction.CallbackContext ctx)
+    {
+        // Nothing
     }
 }
