@@ -85,7 +85,7 @@ public class VoxelData
         surfaceHeights = new float[ChunkSize + 1, ChunkSize + 1, 1];
     }
     
-    public void GenerateSimpleTerrain()
+    public void GenerateSimpleTerrain(List<SubsurfaceLayer> subsurfaceLayers = null)
     {
         // Use seed for consistent but varied terrain
         float seedOffsetX = terrainSeed * 100f;
@@ -127,13 +127,48 @@ public class VoxelData
                     // Determine voxel type based on density and position
                     if (densityMap[x, y, z] > 0)
                     {
-                        // Default to granite (main terrain rock)
-                        voxelTypes[x, y, z] = VoxelType.Granite;
+                        // Determine base terrain type from depth using subsurface layer data
+                        VoxelType terrainType = VoxelType.Granite; // Default fallback
+                        
+                        if (subsurfaceLayers != null && subsurfaceLayers.Count > 0)
+                        {
+                            // Find which layer this depth belongs to and assign corresponding terrain type
+                            for (int i = 0; i < subsurfaceLayers.Count; i++)
+                            {
+                                SubsurfaceLayer layer = subsurfaceLayers[i];
+                                if (depthFromSurface >= layer.depthStart && depthFromSurface < layer.depthEnd)
+                                {
+                                    // Map layer names to voxel types
+                                    terrainType = GetTerrainTypeFromLayerName(layer.name);
+                                    break;
+                                }
+                            }
+                            
+                            // If depth exceeds all layers, use the deepest layer
+                            if (depthFromSurface >= subsurfaceLayers[subsurfaceLayers.Count - 1].depthStart)
+                            {
+                                terrainType = GetTerrainTypeFromLayerName(subsurfaceLayers[subsurfaceLayers.Count - 1].name);
+                            }
+                        }
+                        else
+                        {
+                            // Fallback if no layers provided: simple depth-based assignment
+                            if (depthFromSurface < 3f)
+                                terrainType = VoxelType.Dirt;
+                            else if (depthFromSurface < 10f)
+                                terrainType = VoxelType.LimeStone;
+                            else if (depthFromSurface < 35f)
+                                terrainType = VoxelType.Granite;
+                            else
+                                terrainType = VoxelType.Bedrock;
+                        }
+                        
+                        voxelTypes[x, y, z] = terrainType;
                         
                         // Default layer index (will be set by TerrainChunk if layers are provided)
                         layerIndices[x, y, z] = 0;
                         
-                        // Check for all ore types generically
+                        // Check for all ore types generically (ores override terrain type)
                         foreach (var ore in oreSettings)
                         {
                             if (y >= ore.minY && y <= ore.maxY)
@@ -149,15 +184,6 @@ public class VoxelData
                                     voxelTypes[x, y, z] = ore.oreType;
                                     break; // First matching ore wins (allows ore priority)
                                 }
-                            }
-                        }
-
-                        // Top layer is soil (if still granite and no ore)
-                        if (depthFromSurface >= -0.5f && depthFromSurface <= 2f)
-                        {
-                            if (voxelTypes[x, y, z] == VoxelType.Granite)
-                            {
-                                voxelTypes[x, y, z] = VoxelType.Dirt;
                             }
                         }
                     }
@@ -234,6 +260,29 @@ public class VoxelData
         
         // Multiply all three for truly volumetric veins
         return noise1 * noise2 * noise3;
+    }
+    
+    // Helper method to map subsurface layer names to voxel types
+    private VoxelType GetTerrainTypeFromLayerName(string layerName)
+    {
+        // Map common layer names to voxel types
+        string nameLower = layerName.ToLower();
+        
+        if (nameLower.Contains("grass"))
+            return VoxelType.Grass;
+        else if (nameLower.Contains("soil") || nameLower.Contains("dirt"))
+            return VoxelType.Dirt;
+        else if (nameLower.Contains("limestone") || nameLower.Contains("lime"))
+            return VoxelType.LimeStone;
+        else if (nameLower.Contains("granite"))
+            return VoxelType.Granite;
+        else if (nameLower.Contains("molten") || nameLower.Contains("lava"))
+            return VoxelType.Molten;
+        else if (nameLower.Contains("bedrock"))
+            return VoxelType.Bedrock;
+        
+        // Default to granite if no match
+        return VoxelType.Granite;
     }
     
     public void ModifyDensity(Vector3 localPosition, float radius, float strength)

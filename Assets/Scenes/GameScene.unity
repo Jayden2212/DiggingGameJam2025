@@ -484,13 +484,13 @@ MonoBehaviour:
   - oreType: 11
     prefab: {fileID: 2325772498063498406, guid: ee6c42c826667444f934d8378f31b86e, type: 3}
   oreSpawnBorderMargin: 2
-  terrainHeight: 39
+  terrainHeight: 38.5
   terrainScale: 0.12
-  terrainAmplitude: 1
+  terrainAmplitude: 1.25
   terrainSeed: -1
   oreSettings:
   - oreType: 7
-    threshold: 0.225
+    threshold: 0.2
     scale: 0.465
     minY: 25
     maxY: 37
@@ -530,42 +530,50 @@ MonoBehaviour:
     digEffectPrefab: {fileID: 0}
   - name: Soil
     depthStart: 2
-    depthEnd: 4
+    depthEnd: 5
     color: {r: 0.55, g: 0.4, b: 0.25, a: 1}
     blendRange: 0.5
     requiredToolTier: 0
     hardness: 1
     digEffectPrefab: {fileID: 0}
   - name: Limestone
-    depthStart: 4
-    depthEnd: 10
-    color: {r: 0.75, g: 0.72, b: 0.6, a: 1}
+    depthStart: 5
+    depthEnd: 12
+    color: {r: 0.75, g: 0.72, b: 0.49019608, a: 1}
     blendRange: 1
     requiredToolTier: 0
     hardness: 1.5
     digEffectPrefab: {fileID: 0}
   - name: Granite
-    depthStart: 10
-    depthEnd: 25
-    color: {r: 0.35, g: 0.35, b: 0.38, a: 1}
+    depthStart: 12
+    depthEnd: 20
+    color: {r: 0.50234956, g: 0.50234956, b: 0.5169811, a: 1}
     blendRange: 1
     requiredToolTier: 1
     hardness: 3
     digEffectPrefab: {fileID: 0}
   - name: Deep Granite
-    depthStart: 25
-    depthEnd: 35
+    depthStart: 20
+    depthEnd: 26
     color: {r: 0.25, g: 0.25, b: 0.28, a: 1}
     blendRange: 0.8
     requiredToolTier: 2
     hardness: 5
     digEffectPrefab: {fileID: 0}
+  - name: Molten
+    depthStart: 26
+    depthEnd: 34
+    color: {r: 0.9019608, g: 0.29803923, b: 0.101960786, a: 1}
+    blendRange: 0.5
+    requiredToolTier: 3
+    hardness: 7.5
+    digEffectPrefab: {fileID: 0}
   - name: Bedrock
-    depthStart: 35
+    depthStart: 34
     depthEnd: 100
     color: {r: 0.15, g: 0.15, b: 0.15, a: 1}
     blendRange: 0.5
-    requiredToolTier: 3
+    requiredToolTier: 4
     hardness: 10
     digEffectPrefab: {fileID: 0}
 --- !u!64 &295713347
@@ -2863,17 +2871,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662043806feb14944a92637d239205ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DigTool
-  digRadius: 2
-  digStrength: 25
-  digDistance: 20
-  toolTier: 5
+  digRadius: 1
+  digStrength: 12
+  digDistance: 8
+  attackSpeed: 1
+  toolTier: 0
   upgradesPerTier: 5
   strengthUpgradeAmount: 0.5
   radiusUpgradeAmount: 0.2
   distanceUpgradeAmount: 1
+  attackSpeedUpgradeAmount: 0.1
   strengthUpgradeLevel: 0
   radiusUpgradeLevel: 0
   distanceUpgradeLevel: 0
+  attackSpeedUpgradeLevel: 0
   totalUpgrades: 0
   digCursorPrefab: {fileID: 0}
   pointAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}

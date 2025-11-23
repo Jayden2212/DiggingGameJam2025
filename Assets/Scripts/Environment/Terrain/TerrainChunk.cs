@@ -205,9 +205,10 @@ public class TerrainChunk : MonoBehaviour
         // Apply ore generation settings from inspector
         voxelData.oreSettings = new List<OreGenerationSettings>(oreSettings);
         
-        voxelData.GenerateSimpleTerrain();
+        // Generate terrain with subsurface layer data
+        voxelData.GenerateSimpleTerrain(subsurfaceLayers);
         
-        // Apply subsurface layers after terrain generation
+        // Apply subsurface layers after terrain generation (for layer indices)
         voxelData.ApplySubsurfaceLayers(subsurfaceLayers);
         
         meshGenerator = new VoxelMeshGenerator(voxelData);

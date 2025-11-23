@@ -2,28 +2,37 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// Tool for digging terrain with an upgrade system.
+/// Pickaxe tool for mining terrain with discrete hits.
+/// 
+/// PICKAXE SYSTEM:
+/// - Mines in discrete hits with cooldown between swings
+/// - Hold button to keep swinging automatically
+/// - Each hit deals digStrength damage to terrain
 /// 
 /// UPGRADE SYSTEM:
-/// - Each upgrade (Strength/Radius/Distance) costs 1 skill point
+/// - Strength: Damage per hit
+/// - Radius: Size of mining area
+/// - Distance: Reach distance
+/// - Attack Speed: Time between swings (cooldown)
 /// - Every X upgrades (default 5) automatically increases tool tier
 /// - Tool tier determines which terrain layers can be dug
-/// 
-/// INTEGRATION:
-/// Call UpgradeStrength(), UpgradeRadius(), or UpgradeDistance() from your
-/// progression/UI system when player spends skill points.
-/// See PlayerProgressionSystem.cs for example integration.
 /// </summary>
 public class DigTool : MonoBehaviour
 {
-    [Header("Digging Settings")]
+    [Header("Pickaxe Settings")]
     public float digRadius = 2f;
-    public float digStrength = 5f;
+    public float digStrength = 10f; // Damage per hit
     public float digDistance = 10f;
+    public float attackSpeed = 1f; // Attacks per second (higher = faster)
     
     [Header("Tool Upgrade")]
     [Tooltip("Current tool tier (0 = basic, 1 = upgraded, etc.)")]
     public int toolTier = 0;
+    
+    // Pickaxe timing
+    private float lastHitTime = 0f;
+    private float hitCooldown => 1f / attackSpeed; // Time between hits
+    private bool isHoldingButton = false;
     
     [Header("Upgrade System")]
     [Tooltip("Number of total upgrades needed to increase tool tier")]
@@ -38,6 +47,9 @@ public class DigTool : MonoBehaviour
     [Tooltip("How much each distance upgrade increases dig distance")]
     public float distanceUpgradeAmount = 1f;
     
+    [Tooltip("How much each attack speed upgrade increases attacks per second")]
+    public float attackSpeedUpgradeAmount = 0.1f;
+    
     [Header("Current Upgrade Levels (Read Only)")]
     [Tooltip("Number of times strength has been upgraded")]
     public int strengthUpgradeLevel = 0;
@@ -48,6 +60,9 @@ public class DigTool : MonoBehaviour
     [Tooltip("Number of times distance has been upgraded")]
     public int distanceUpgradeLevel = 0;
     
+    [Tooltip("Number of times attack speed has been upgraded")]
+    public int attackSpeedUpgradeLevel = 0;
+    
     [Tooltip("Total number of upgrades purchased (used to calculate tier)")]
     public int totalUpgrades = 0;
     
@@ -55,6 +70,7 @@ public class DigTool : MonoBehaviour
     private float baseStrength;
     private float baseRadius;
     private float baseDistance;
+    private float baseAttackSpeed;
     
     [Header("Visual Feedback")]
     public GameObject digCursorPrefab; // Optional: sphere to show dig location
@@ -82,6 +98,7 @@ public class DigTool : MonoBehaviour
         baseStrength = digStrength;
         baseRadius = digRadius;
         baseDistance = digDistance;
+        baseAttackSpeed = attackSpeed;
         
         if (digCursorPrefab != null)
         {
@@ -170,6 +187,21 @@ public class DigTool : MonoBehaviour
     }
     
     /// <summary>
+    /// Upgrade the attack speed. Costs 1 skill point.
+    /// Returns true if upgrade was successful, false if not.
+    /// </summary>
+    public bool UpgradeAttackSpeed()
+    {
+        attackSpeedUpgradeLevel++;
+        attackSpeed = baseAttackSpeed + (attackSpeedUpgradeLevel * attackSpeedUpgradeAmount);
+        
+        IncrementTotalUpgrades();
+        
+        Debug.Log($"Attack Speed upgraded to level {attackSpeedUpgradeLevel}! New speed: {attackSpeed:F2} hits/sec (cooldown: {hitCooldown:F2}s)");
+        return true;
+    }
+    
+    /// <summary>
     /// Increments total upgrades and checks if tool tier should increase
     /// </summary>
     private void IncrementTotalUpgrades()
@@ -221,12 +253,14 @@ public class DigTool : MonoBehaviour
         strengthUpgradeLevel = 0;
         radiusUpgradeLevel = 0;
         distanceUpgradeLevel = 0;
+        attackSpeedUpgradeLevel = 0;
         totalUpgrades = 0;
         toolTier = 0;
         
         digStrength = baseStrength;
         digRadius = baseRadius;
         digDistance = baseDistance;
+        attackSpeed = baseAttackSpeed;
         
         if (digCursor != null)
         {
@@ -300,12 +334,13 @@ public class DigTool : MonoBehaviour
     [ContextMenu("Show Upgrade Info")]
     private void DebugShowInfo()
     {
-        Debug.Log($"=== TOOL UPGRADE INFO ===");
+        Debug.Log($"=== PICKAXE UPGRADE INFO ===");
         Debug.Log($"Tool Tier: {toolTier}");
         Debug.Log($"Total Upgrades: {totalUpgrades}");
-        Debug.Log($"Strength Level: {strengthUpgradeLevel} (Current: {digStrength:F1})");
-        Debug.Log($"Radius Level: {radiusUpgradeLevel} (Current: {digRadius:F1})");
-        Debug.Log($"Distance Level: {distanceUpgradeLevel} (Current: {digDistance:F1})");
+        Debug.Log($"Strength Level: {strengthUpgradeLevel} (Damage: {digStrength:F1} per hit)");
+        Debug.Log($"Radius Level: {radiusUpgradeLevel} (Radius: {digRadius:F1})");
+        Debug.Log($"Distance Level: {distanceUpgradeLevel} (Distance: {digDistance:F1})");
+        Debug.Log($"Attack Speed Level: {attackSpeedUpgradeLevel} (Speed: {attackSpeed:F2} hits/sec)");
         Debug.Log($"Upgrades until next tier: {GetUpgradesUntilNextTier()}");
         Debug.Log($"Progress to next tier: {GetTierProgressPercentage() * 100:F0}%");
     }
@@ -356,39 +391,62 @@ public class DigTool : MonoBehaviour
                 digCursor.transform.position = hit.point;
             }
             
-            // Dig on left click
+            // Pickaxe swing system - discrete hits with cooldown
             if (leftPressed)
             {
-                TerrainChunk chunk = hit.collider.GetComponent<TerrainChunk>();
-                if (chunk != null)
+                isHoldingButton = true;
+                
+                // Check if enough time has passed since last hit
+                if (Time.time - lastHitTime >= hitCooldown)
                 {
-                    // Check if we can dig at this position based on tool tier
-                    SubsurfaceLayer layer = chunk.GetLayerAtPosition(hit.point);
-                    if (layer != null)
-                    {
-                        if (toolTier < layer.requiredToolTier)
-                        {
-                            // Tool too weak - show feedback (optional)
-                            Debug.Log($"Tool tier {toolTier} too weak for {layer.name} (requires tier {layer.requiredToolTier})");
-                            return;
-                        }
-                        
-                        // Apply hardness multiplier to dig strength
-                        float effectiveStrength = digStrength / layer.hardness;
-                        chunk.DigAtPosition(hit.point, digRadius, effectiveStrength * Time.deltaTime);
-                    }
-                    else
-                    {
-                        // No layer info, use default strength
-                        chunk.DigAtPosition(hit.point, digRadius, digStrength * Time.deltaTime);
-                    }
+                    lastHitTime = Time.time;
+                    PerformPickaxeHit(hit);
                 }
+            }
+            else
+            {
+                isHoldingButton = false;
             }
         }
         else
         {
             if (digCursor != null)
                 digCursor.SetActive(false);
+        }
+    }
+    
+    /// <summary>
+    /// Performs a single pickaxe hit at the target location
+    /// </summary>
+    private void PerformPickaxeHit(RaycastHit hit)
+    {
+        TerrainChunk chunk = hit.collider.GetComponent<TerrainChunk>();
+        if (chunk != null)
+        {
+            // Check if we can dig at this position based on tool tier
+            SubsurfaceLayer layer = chunk.GetLayerAtPosition(hit.point);
+            if (layer != null)
+            {
+                if (toolTier < layer.requiredToolTier)
+                {
+                    // Tool too weak - show feedback
+                    Debug.Log($"Tool tier {toolTier} too weak for {layer.name} (requires tier {layer.requiredToolTier})");
+                    // TODO: Play "can't mine" sound/effect
+                    return;
+                }
+                
+                // Apply hardness multiplier to dig strength (single hit damage)
+                float effectiveStrength = digStrength / layer.hardness;
+                chunk.DigAtPosition(hit.point, digRadius, effectiveStrength);
+            }
+            else
+            {
+                // No layer info, use default strength
+                chunk.DigAtPosition(hit.point, digRadius, digStrength);
+            }
+            
+            // TODO: Play pickaxe swing sound/animation
+            // TODO: Spawn hit particles at hit.point
         }
     }
 }
