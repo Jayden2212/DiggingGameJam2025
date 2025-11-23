@@ -1461,6 +1461,7 @@ GameObject:
   - component: {fileID: 1097059843}
   - component: {fileID: 1097059842}
   - component: {fileID: 1097059841}
+  - component: {fileID: 1097059847}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1649,6 +1650,19 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1097059847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097059839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e5efb345f9b641cc80221b5653092b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Diggin
+  digParticlesPrefab: {fileID: 5780431765551164333, guid: 5b3f3b9260c1c418287105614e617157, type: 3}
 --- !u!1 &1381835522 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a230752f304ee4ae9bc1fcd8f937fa67, type: 3}
