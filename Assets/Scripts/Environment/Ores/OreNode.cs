@@ -8,8 +8,14 @@ public class OreNode : MonoBehaviour
     public int resourceAmount = 20;
     
     [Header("Connection Settings")]
-    public float checkRadius = 0.5f;
+    [Tooltip("Base check radius multiplied by ore scale - represents the effective voxel size")]
+    public float checkRadius = 0.1f;
+    
+    [Tooltip("How often to check if ore is still connected to terrain (seconds)")]
     public float checkInterval = 0.5f;
+    
+    [HideInInspector]
+    public float effectiveVoxelSize = 1.0f; // Set by TerrainChunk based on oreScale
     
     private TerrainChunk parentChunk;
     private Vector3 localVoxelPosition;
@@ -45,15 +51,18 @@ public class OreNode : MonoBehaviour
         // Check if there's solid terrain nearby
         bool hasNearbyTerrain = false;
         
+        // Calculate actual check distance based on scaled voxel size and base radius
+        float actualCheckRadius = checkRadius * effectiveVoxelSize;
+        
         // Sample multiple points around the ore
         Vector3[] checkPoints = new Vector3[]
         {
-            transform.position + Vector3.up * checkRadius,
-            transform.position + Vector3.down * checkRadius,
-            transform.position + Vector3.left * checkRadius,
-            transform.position + Vector3.right * checkRadius,
-            transform.position + Vector3.forward * checkRadius,
-            transform.position + Vector3.back * checkRadius
+            transform.position + Vector3.up * actualCheckRadius,
+            transform.position + Vector3.down * actualCheckRadius,
+            transform.position + Vector3.left * actualCheckRadius,
+            transform.position + Vector3.right * actualCheckRadius,
+            transform.position + Vector3.forward * actualCheckRadius,
+            transform.position + Vector3.back * actualCheckRadius
         };
         
         foreach (Vector3 point in checkPoints)

@@ -24,38 +24,51 @@ public class TerrainChunk : MonoBehaviour
     private MeshCollider meshCollider;
     
     [Header("Ore Prefabs")]
-    [Tooltip("Map each ore type to its prefab")]
+    [Tooltip("Map each ore type to its prefab - assign prefabs in Inspector")]
     public List<OrePrefabMapping> orePrefabs = new List<OrePrefabMapping>()
     {
-        new OrePrefabMapping(VoxelType.IronOre, null),
         new OrePrefabMapping(VoxelType.CopperOre, null),
-        // Add more: new OrePrefabMapping(VoxelType.GoldOre, null),
+        new OrePrefabMapping(VoxelType.IronOre, null),
+        new OrePrefabMapping(VoxelType.GoldOre, null),
+        new OrePrefabMapping(VoxelType.AmethystOre, null),
+        new OrePrefabMapping(VoxelType.DiamondOre, null),
     };
+    
+    [Tooltip("Prevent ores from spawning this many voxels from the edge (prevents clipping)")]
+    [Range(0, 5)]
+    public int oreSpawnBorderMargin = 2;
 
     [Header("━━━━━━━━━━ TERRAIN GENERATION ━━━━━━━━━━")]
     [Header("Basic Terrain Settings")]
     [Tooltip("Surface height of terrain - increase this to make terrain deeper/taller (max ChunkHeight = 40)")]
     [Range(0f, 40f)]
-    public float terrainHeight = 40f;
+    public float terrainHeight = 39f;
     
     [Tooltip("Scale of the terrain noise (smaller = smoother hills, larger = more variation)")]
     [Range(0.01f, 0.5f)]
-    public float terrainScale = 0.15f;
+    public float terrainScale = 0.12f;
     
     [Tooltip("How much the terrain height varies (creates hills and valleys)")]
     [Range(0f, 15f)]
-    public float terrainAmplitude = 4f;
+    public float terrainAmplitude = 1f;
     
-    [Tooltip("Random seed for terrain generation (change for different terrain)")]
-    public int terrainSeed = 0;
+    [Tooltip("Random seed for terrain generation (change for different terrain, -1 = random seed)")]
+    public int terrainSeed = -1;
     
     [Header("Ore Generation (Edit in List Below)")]
-    [Tooltip("Configure all ore types here. Order matters - first matching ore wins!")]
+    [Tooltip("Configure all ore types here. Order matters - first matching ore wins!\n\nTo spawn MORE ore: LOWER the threshold (try 0.3)\nTo spawn LESS ore: RAISE the threshold (try 0.5)\n\nFor 3D volumetric veins: Keep threshold between 0.3-0.45 and scale between 0.15-0.25\n\nNOTE: minY/maxY are Y-coordinates (0=bottom, 40=top), NOT depth from surface!")]
     public List<OreGenerationSettings> oreSettings = new List<OreGenerationSettings>()
     {
-        new OreGenerationSettings(VoxelType.IronOre, 0.65f, 0.2f, 5, 30, 0f),
-        new OreGenerationSettings(VoxelType.CopperOre, 0.68f, 0.25f, 8, 35, 50f),
-        // Add more ores here: new OreGenerationSettings(VoxelType.GoldOre, 0.75f, 0.18f, 2, 15, 100f),
+        // Copper - Common (large 3D veins, shallow depth 3-15m = Y: 25-37)
+        new OreGenerationSettings(VoxelType.CopperOre, 0.2f, 0.465f, 25, 37, 0f),
+        // Iron - Common (moderate 3D veins, mid-depth 10-25m = Y: 15-30)
+        new OreGenerationSettings(VoxelType.IronOre, 0.2f, 0.465f, 15, 30, 50f),
+        // Gold - Uncommon (smaller veins, deeper 15-30m = Y: 10-25)
+        new OreGenerationSettings(VoxelType.GoldOre, 0.2f, 0.465f, 10, 25, 100f),
+        // Amethyst - Rare (small veins, deep 20-35m = Y: 5-20)
+        new OreGenerationSettings(VoxelType.AmethystOre, 0.2f, 0.465f, 5, 20, 150f),
+        // Diamond - Very Rare (tiny veins, very deep 28-38m = Y: 2-12)
+        new OreGenerationSettings(VoxelType.DiamondOre, 0.2f, 0.465f, 2, 12, 200f),
     };
 
     [Header("━━━━━━━━━━ LAYER SYSTEM ━━━━━━━━━━")]
@@ -65,43 +78,63 @@ public class TerrainChunk : MonoBehaviour
     {
         new SubsurfaceLayer() 
         { 
-            name = "Topsoil", 
+            name = "Grass", 
             depthStart = 0f, 
-            depthEnd = 3f, 
-            color = new Color(0.62f, 0.45f, 0.27f), 
+            depthEnd = 2f, 
+            color = new Color(108 / 255f, 158 / 255f, 47 / 255f, 1f), // Brown soil
             blendRange = 0.5f,
             requiredToolTier = 0,
             hardness = 1f
         },
         new SubsurfaceLayer() 
         { 
-            name = "Stone", 
-            depthStart = 3f, 
-            depthEnd = 8f, 
-            color = new Color(0.5f, 0.5f, 0.5f), 
+            name = "Soil", 
+            depthStart = 2f, 
+            depthEnd = 4f, 
+            color = new Color(0.55f, 0.40f, 0.25f, 1f), // Brown soil
+            blendRange = 0.5f,
+            requiredToolTier = 0,
+            hardness = 1f
+        },
+        new SubsurfaceLayer() 
+        { 
+            name = "Limestone", 
+            depthStart = 4f, 
+            depthEnd = 10f, 
+            color = new Color(0.75f, 0.72f, 0.60f, 1f), // Yellow-grey limestone
+            blendRange = 1f,
+            requiredToolTier = 0,
+            hardness = 1.5f
+        },
+        new SubsurfaceLayer() 
+        { 
+            name = "Granite", 
+            depthStart = 10f, 
+            depthEnd = 25f, 
+            color = new Color(0.35f, 0.35f, 0.38f, 1f), // Dark grey granite
             blendRange = 1f,
             requiredToolTier = 1,
-            hardness = 2f
+            hardness = 3f
         },
         new SubsurfaceLayer() 
         { 
-            name = "Hard Rock", 
-            depthStart = 8f, 
-            depthEnd = 15f, 
-            color = new Color(0.3f, 0.3f, 0.35f), 
+            name = "Deep Granite", 
+            depthStart = 25f, 
+            depthEnd = 35f, 
+            color = new Color(0.25f, 0.25f, 0.28f, 1f), // Darker granite
             blendRange = 0.8f,
             requiredToolTier = 2,
-            hardness = 4f
+            hardness = 5f
         },
         new SubsurfaceLayer() 
         { 
-            name = "Obsidian", 
-            depthStart = 15f, 
+            name = "Bedrock", 
+            depthStart = 35f, 
             depthEnd = 100f, 
-            color = new Color(0.05f, 0.05f, 0.08f), 
+            color = new Color(0.15f, 0.15f, 0.15f, 1f), // Black bedrock
             blendRange = 0.5f,
             requiredToolTier = 3,
-            hardness = 8f
+            hardness = 10f
         }
     };
     
@@ -160,14 +193,22 @@ public class TerrainChunk : MonoBehaviour
         voxelData.terrainHeight = terrainHeight;
         voxelData.terrainScale = terrainScale;
         voxelData.terrainAmplitude = terrainAmplitude;
-        voxelData.terrainSeed = terrainSeed;
+        if (terrainSeed == -1)
+        {
+            voxelData.terrainSeed = System.DateTime.Now.Millisecond;
+        }
+        else
+        {
+            voxelData.terrainSeed = terrainSeed;        
+        }
         
         // Apply ore generation settings from inspector
         voxelData.oreSettings = new List<OreGenerationSettings>(oreSettings);
         
-        voxelData.GenerateSimpleTerrain();
+        // Generate terrain with subsurface layer data
+        voxelData.GenerateSimpleTerrain(subsurfaceLayers);
         
-        // Apply subsurface layers after terrain generation
+        // Apply subsurface layers after terrain generation (for layer indices)
         voxelData.ApplySubsurfaceLayers(subsurfaceLayers);
         
         meshGenerator = new VoxelMeshGenerator(voxelData);
@@ -199,11 +240,17 @@ public class TerrainChunk : MonoBehaviour
         int sizeY = voxelData.voxelTypes.GetLength(1);
         int sizeZ = voxelData.voxelTypes.GetLength(2);
 
-        for (int x = 0; x < sizeX; x++)
+        // Calculate ore spawn boundaries (avoid edges)
+        int minX = oreSpawnBorderMargin;
+        int maxX = sizeX - oreSpawnBorderMargin - 1;
+        int minZ = oreSpawnBorderMargin;
+        int maxZ = sizeZ - oreSpawnBorderMargin - 1;
+
+        for (int x = minX; x <= maxX; x++)
         {
             for (int y = 0; y < sizeY; y++)
             {
-                for (int z = 0; z < sizeZ; z++)
+                for (int z = minZ; z <= maxZ; z++)
                 {
                     // Skip empty voxels (density <= 0)
                     if (voxelData.densityMap[x, y, z] <= 0)
@@ -216,8 +263,8 @@ public class TerrainChunk : MonoBehaviour
                     {
                         Vector3 worldPos = transform.TransformPoint(new Vector3(x, y, z) * VoxelData.VoxelSize);
                         
-                        // Use random rotation for variety (or use prefab's rotation if preferred)
-                        Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                        // Rotate -90 on X axis to fix orientation, random Y rotation for variety
+                        Quaternion rotation = Quaternion.Euler(-90f, Random.Range(0f, 360f), 0f);
                         GameObject ore = Instantiate(orePrefabDict[vt], worldPos, rotation, transform);
                         
                         // Set the ore type on the OreNode component

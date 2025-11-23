@@ -473,59 +473,108 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainChunk
   orePrefabs:
-  - oreType: 4
-    prefab: {fileID: 1358232390471894224, guid: b2331957ef11b405d9c2fbfe4aadba40, type: 3}
-  - oreType: 5
+  - oreType: 7
     prefab: {fileID: 3653720853350932017, guid: 35d078df0ecfe4a1e989e48d3310eb0a, type: 3}
-  terrainHeight: 38
+  - oreType: 8
+    prefab: {fileID: 1358232390471894224, guid: b2331957ef11b405d9c2fbfe4aadba40, type: 3}
+  - oreType: 9
+    prefab: {fileID: 882122156316036897, guid: 7e0b806e8933140b89eba8e73d326af8, type: 3}
+  - oreType: 10
+    prefab: {fileID: 5578729043900162879, guid: 4e53c638f4d58499cbedec4574768dca, type: 3}
+  - oreType: 11
+    prefab: {fileID: 2325772498063498406, guid: ee6c42c826667444f934d8378f31b86e, type: 3}
+  oreSpawnBorderMargin: 2
+  terrainHeight: 38.5
   terrainScale: 0.12
-  terrainAmplitude: 2
-  terrainSeed: 0
+  terrainAmplitude: 1.25
+  terrainSeed: -1
   oreSettings:
-  - oreType: 4
-    threshold: 0.65
-    scale: 0.2
-    minY: 30
-    maxY: 36
+  - oreType: 7
+    threshold: 0.2
+    scale: 0.465
+    minY: 25
+    maxY: 37
     seedOffset: 0
-  - oreType: 5
-    threshold: 0.68
-    scale: 0.25
-    minY: 20
+  - oreType: 8
+    threshold: 0.25
+    scale: 0.465
+    minY: 15
     maxY: 30
     seedOffset: 50
+  - oreType: 9
+    threshold: 0.25
+    scale: 0.465
+    minY: 10
+    maxY: 25
+    seedOffset: 100
+  - oreType: 10
+    threshold: 0.275
+    scale: 0.465
+    minY: 5
+    maxY: 20
+    seedOffset: 150
+  - oreType: 11
+    threshold: 0.3
+    scale: 0.465
+    minY: 2
+    maxY: 12
+    seedOffset: 200
   subsurfaceLayers:
   - name: Grass
     depthStart: 0
-    depthEnd: 4
-    color: {r: 0.40784317, g: 0.6392157, b: 0.35686275, a: 1}
-    blendRange: 1
+    depthEnd: 2
+    color: {r: 0.42352942, g: 0.61960787, b: 0.18431373, a: 1}
+    blendRange: 0.5
     requiredToolTier: 0
     hardness: 1
     digEffectPrefab: {fileID: 0}
-  - name: Dirt
-    depthStart: 4
-    depthEnd: 10
-    color: {r: 0.4, g: 0.2705882, b: 0, a: 1}
-    blendRange: 1
+  - name: Soil
+    depthStart: 2
+    depthEnd: 5
+    color: {r: 0.55, g: 0.4, b: 0.25, a: 1}
+    blendRange: 0.5
     requiredToolTier: 0
     hardness: 1
     digEffectPrefab: {fileID: 0}
-  - name: Stone
-    depthStart: 10
+  - name: Limestone
+    depthStart: 5
+    depthEnd: 12
+    color: {r: 0.75, g: 0.72, b: 0.49019608, a: 1}
+    blendRange: 1
+    requiredToolTier: 0
+    hardness: 1.5
+    digEffectPrefab: {fileID: 0}
+  - name: Granite
+    depthStart: 12
     depthEnd: 20
-    color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    color: {r: 0.50234956, g: 0.50234956, b: 0.5169811, a: 1}
     blendRange: 1
     requiredToolTier: 1
-    hardness: 1
+    hardness: 3
     digEffectPrefab: {fileID: 0}
-  - name: Obsidian
+  - name: Deep Granite
     depthStart: 20
-    depthEnd: 25
-    color: {r: 0.05, g: 0.05, b: 0.08, a: 1}
-    blendRange: 1
+    depthEnd: 26
+    color: {r: 0.25, g: 0.25, b: 0.28, a: 1}
+    blendRange: 0.8
     requiredToolTier: 2
-    hardness: 1
+    hardness: 5
+    digEffectPrefab: {fileID: 0}
+  - name: Molten
+    depthStart: 26
+    depthEnd: 34
+    color: {r: 0.9019608, g: 0.29803923, b: 0.101960786, a: 1}
+    blendRange: 0.5
+    requiredToolTier: 3
+    hardness: 7.5
+    digEffectPrefab: {fileID: 0}
+  - name: Bedrock
+    depthStart: 34
+    depthEnd: 100
+    color: {r: 0.15, g: 0.15, b: 0.15, a: 1}
+    blendRange: 0.5
+    requiredToolTier: 4
+    hardness: 10
     digEffectPrefab: {fileID: 0}
 --- !u!64 &295713347
 MeshCollider:
@@ -2822,17 +2871,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662043806feb14944a92637d239205ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DigTool
-  digRadius: 2
-  digStrength: 25
-  digDistance: 20
-  toolTier: 5
+  digRadius: 1
+  digStrength: 12
+  digDistance: 8
+  attackSpeed: 1
+  toolTier: 0
   upgradesPerTier: 5
   strengthUpgradeAmount: 0.5
   radiusUpgradeAmount: 0.2
   distanceUpgradeAmount: 1
+  attackSpeedUpgradeAmount: 0.1
   strengthUpgradeLevel: 0
   radiusUpgradeLevel: 0
   distanceUpgradeLevel: 0
+  attackSpeedUpgradeLevel: 0
   totalUpgrades: 0
   digCursorPrefab: {fileID: 0}
   pointAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}

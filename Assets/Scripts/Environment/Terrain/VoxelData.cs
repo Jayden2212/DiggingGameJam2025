@@ -4,12 +4,17 @@ using System.Collections.Generic;
 public enum VoxelType
 {
     Air,
+    Grass,
     Dirt,
-    Stone,
-    Obsidian,
-    IronOre,
+    LimeStone,
+    Granite,
+    Bedrock,
+    Molten,
     CopperOre,
+    IronOre,
     GoldOre,
+    AmethystOre,
+    DiamondOre
     // Add more ore types as needed
 }
 
@@ -17,10 +22,14 @@ public enum VoxelType
 public class OreGenerationSettings
 {
     public VoxelType oreType;
+    
+    [Header("Ore Abundance")]
     [Range(0f, 1f)]
-    [Tooltip("Higher value = less ore spawns (threshold for spawning)")]
+    [Tooltip("LOWER = More Ore | HIGHER = Less Ore\nRare: 0.7-0.8 | Common: 0.5-0.6 | Abundant: 0.3-0.5")]
     public float threshold = 0.65f;
-    [Tooltip("Scale of ore noise patterns (smaller = bigger veins)")]
+    
+    [Tooltip("Vein Size: SMALLER value = BIGGER veins | Common range: 0.1-0.3")]
+    [Range(0.05f, 0.5f)]
     public float scale = 0.2f;
     [Tooltip("Minimum Y level for this ore")]
     public int minY = 0;
@@ -76,7 +85,7 @@ public class VoxelData
         surfaceHeights = new float[ChunkSize + 1, ChunkSize + 1, 1];
     }
     
-    public void GenerateSimpleTerrain()
+    public void GenerateSimpleTerrain(List<SubsurfaceLayer> subsurfaceLayers = null)
     {
         // Use seed for consistent but varied terrain
         float seedOffsetX = terrainSeed * 100f;
@@ -118,13 +127,48 @@ public class VoxelData
                     // Determine voxel type based on density and position
                     if (densityMap[x, y, z] > 0)
                     {
-                        // Default to stone
-                        voxelTypes[x, y, z] = VoxelType.Stone;
+                        // Determine base terrain type from depth using subsurface layer data
+                        VoxelType terrainType = VoxelType.Granite; // Default fallback
+                        
+                        if (subsurfaceLayers != null && subsurfaceLayers.Count > 0)
+                        {
+                            // Find which layer this depth belongs to and assign corresponding terrain type
+                            for (int i = 0; i < subsurfaceLayers.Count; i++)
+                            {
+                                SubsurfaceLayer layer = subsurfaceLayers[i];
+                                if (depthFromSurface >= layer.depthStart && depthFromSurface < layer.depthEnd)
+                                {
+                                    // Map layer names to voxel types
+                                    terrainType = GetTerrainTypeFromLayerName(layer.name);
+                                    break;
+                                }
+                            }
+                            
+                            // If depth exceeds all layers, use the deepest layer
+                            if (depthFromSurface >= subsurfaceLayers[subsurfaceLayers.Count - 1].depthStart)
+                            {
+                                terrainType = GetTerrainTypeFromLayerName(subsurfaceLayers[subsurfaceLayers.Count - 1].name);
+                            }
+                        }
+                        else
+                        {
+                            // Fallback if no layers provided: simple depth-based assignment
+                            if (depthFromSurface < 3f)
+                                terrainType = VoxelType.Dirt;
+                            else if (depthFromSurface < 10f)
+                                terrainType = VoxelType.LimeStone;
+                            else if (depthFromSurface < 35f)
+                                terrainType = VoxelType.Granite;
+                            else
+                                terrainType = VoxelType.Bedrock;
+                        }
+                        
+                        voxelTypes[x, y, z] = terrainType;
                         
                         // Default layer index (will be set by TerrainChunk if layers are provided)
                         layerIndices[x, y, z] = 0;
                         
-                        // Check for all ore types generically
+                        // Check for all ore types generically (ores override terrain type)
                         foreach (var ore in oreSettings)
                         {
                             if (y >= ore.minY && y <= ore.maxY)
@@ -140,15 +184,6 @@ public class VoxelData
                                     voxelTypes[x, y, z] = ore.oreType;
                                     break; // First matching ore wins (allows ore priority)
                                 }
-                            }
-                        }
-                        
-                        // Top layer is dirt (if still stone)
-                        if (depthFromSurface >= -0.5f && depthFromSurface <= 2f)
-                        {
-                            if (voxelTypes[x, y, z] == VoxelType.Stone)
-                            {
-                                voxelTypes[x, y, z] = VoxelType.Dirt;
                             }
                         }
                     }
@@ -205,19 +240,49 @@ public class VoxelData
     // Helper method to calculate 3D ore noise
     private float Calculate3DOreNoise(int x, int y, int z, float seedX, float seedZ, float scale, float offset)
     {
-        // Use 3D Perlin noise by multiplying two 2D noise samples
-        // This creates more natural vein-like patterns
+        // Use true 3D noise by combining three 2D noise samples across different axes
+        // This creates more natural, volumetric vein patterns instead of flat horizontal veins
+        
         float noise1 = Mathf.PerlinNoise(
             (x + seedX + offset) * scale,
-            (y + seedX * 0.5f + offset) * scale
+            (y + offset) * scale  // Full Y weight for vertical variation
         );
         
         float noise2 = Mathf.PerlinNoise(
             (z + seedZ + offset) * scale,
-            (y + seedZ * 0.7f + offset) * scale
+            (y + offset * 1.3f) * scale  // Full Y weight, different offset for variety
         );
         
-        return noise1 * noise2;
+        float noise3 = Mathf.PerlinNoise(
+            (x + offset * 0.7f) * scale,
+            (z + offset * 1.7f) * scale  // X-Z plane for additional 3D structure
+        );
+        
+        // Multiply all three for truly volumetric veins
+        return noise1 * noise2 * noise3;
+    }
+    
+    // Helper method to map subsurface layer names to voxel types
+    private VoxelType GetTerrainTypeFromLayerName(string layerName)
+    {
+        // Map common layer names to voxel types
+        string nameLower = layerName.ToLower();
+        
+        if (nameLower.Contains("grass"))
+            return VoxelType.Grass;
+        else if (nameLower.Contains("soil") || nameLower.Contains("dirt"))
+            return VoxelType.Dirt;
+        else if (nameLower.Contains("limestone") || nameLower.Contains("lime"))
+            return VoxelType.LimeStone;
+        else if (nameLower.Contains("granite"))
+            return VoxelType.Granite;
+        else if (nameLower.Contains("molten") || nameLower.Contains("lava"))
+            return VoxelType.Molten;
+        else if (nameLower.Contains("bedrock"))
+            return VoxelType.Bedrock;
+        
+        // Default to granite if no match
+        return VoxelType.Granite;
     }
     
     public void ModifyDensity(Vector3 localPosition, float radius, float strength)
