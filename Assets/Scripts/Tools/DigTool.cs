@@ -391,6 +391,9 @@ public class DigTool : MonoBehaviour
                 digCursor.transform.position = hit.point;
             }
             
+            // Note: Hits are now triggered by animation events via Swing.cs
+            // The old direct hit logic is commented out to prevent double-hits
+            /*
             // Pickaxe swing system - discrete hits with cooldown
             if (leftPressed)
             {
@@ -407,6 +410,7 @@ public class DigTool : MonoBehaviour
             {
                 isHoldingButton = false;
             }
+            */
         }
         else
         {
@@ -418,6 +422,33 @@ public class DigTool : MonoBehaviour
     /// <summary>
     /// Performs a single pickaxe hit at the target location
     /// </summary>
+    // Called by animation event to trigger hit at the right moment
+    public void TriggerHitFromAnimation()
+    {
+        // Get raycast hit for current aim position
+        Ray ray;
+        if (aimMode == AimMode.Pointer)
+        {
+            Vector2 pointerPos = pointAction.action.ReadValue<Vector2>();
+            ray = mainCamera.ScreenPointToRay(pointerPos);
+        }
+        else if (aimMode == AimMode.CameraCenter)
+        {
+            ray = mainCamera.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
+        }
+        else
+        {
+            Transform origin = aimOrigin != null ? aimOrigin : mainCamera.transform;
+            ray = new Ray(origin.position, origin.forward);
+        }
+        
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, digDistance))
+        {
+            PerformPickaxeHit(hit);
+        }
+    }
+    
     private void PerformPickaxeHit(RaycastHit hit)
     {
         TerrainChunk chunk = hit.collider.GetComponent<TerrainChunk>();
