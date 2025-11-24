@@ -37,43 +37,14 @@ public class PlayerProgression : MonoBehaviour
     
     void Start()
     {
-        // Find inventory and subscribe to resource added events
+        // Find inventory reference for potential future use
         inventory = GetComponent<PlayerInventory>();
         if (inventory == null)
         {
             inventory = FindFirstObjectByType<PlayerInventory>();
         }
-        
-        if (inventory != null)
-        {
-            inventory.onResourceAdded.AddListener(OnResourceCollected);
-        }
     }
-    
-    void OnDestroy()
-    {
-        if (inventory != null)
-        {
-            inventory.onResourceAdded.RemoveListener(OnResourceCollected);
-        }
-    }
-    
-    /// <summary>
-    /// Called when resources are added to inventory. Grants XP for ores.
-    /// </summary>
-    void OnResourceCollected(VoxelType type, int amount)
-    {
-        var resourceData = inventory.GetResourceData(type);
-        if (resourceData != null && resourceData.xpValue > 0)
-        {
-            int xpGained = resourceData.xpValue * amount;
-            AddXP(xpGained);
-        }
-    }
-    
-    /// <summary>
-    /// Add XP and check for level ups.
-    /// </summary>
+
     public void AddXP(int amount)
     {
         if (amount <= 0) return;
@@ -88,26 +59,17 @@ public class PlayerProgression : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Calculate XP required for next level based on current level.
-    /// </summary>
     public int GetXPRequiredForNextLevel()
     {
         return Mathf.RoundToInt(baseXPRequired * Mathf.Pow(xpScaling, level - 1));
     }
     
-    /// <summary>
-    /// Get XP progress as percentage (0-1) for UI bars.
-    /// </summary>
     public float GetXPProgress()
     {
         int xpRequired = GetXPRequiredForNextLevel();
         return xpRequired > 0 ? (float)currentXP / xpRequired : 1f;
     }
     
-    /// <summary>
-    /// Level up and grant skill points.
-    /// </summary>
     void LevelUp()
     {
         level++;
@@ -122,9 +84,6 @@ public class PlayerProgression : MonoBehaviour
         Debug.Log($"Level Up! Now level {level}. Gained {skillPointsPerLevel} skill point(s). Total: {skillPoints}");
     }
     
-    /// <summary>
-    /// Spend a skill point (for tool upgrades). Returns true if successful.
-    /// </summary>
     public bool SpendSkillPoint()
     {
         if (skillPoints > 0)
@@ -138,17 +97,11 @@ public class PlayerProgression : MonoBehaviour
         return false;
     }
     
-    /// <summary>
-    /// Check if player has enough skill points.
-    /// </summary>
     public bool HasSkillPoints(int amount = 1)
     {
         return skillPoints >= amount;
     }
     
-    /// <summary>
-    /// Add skill points directly (for testing/cheats).
-    /// </summary>
     public void AddSkillPoints(int amount)
     {
         if (amount > 0)
@@ -158,9 +111,6 @@ public class PlayerProgression : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Reset progression (for new game).
-    /// </summary>
     public void ResetProgression()
     {
         currentXP = 0;

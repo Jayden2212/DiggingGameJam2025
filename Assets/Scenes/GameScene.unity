@@ -528,7 +528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f13b5c12a4f6437591c14908e867667, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SellingStation
-  pop: {fileID: 1693906670}
+  popUpSystem: {fileID: 1693906670}
 --- !u!1 &128254680
 GameObject:
   m_ObjectHideFlags: 0
@@ -2418,7 +2418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f832288ca252235478713129aa67b29b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
-  defaultMaxCapacity: 100
+  maxInventoryCapacity: 200
   resources: []
   onResourceAdded:
     m_PersistentCalls:
@@ -2427,6 +2427,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onResourceFull:
+    m_PersistentCalls:
+      m_Calls: []
+  onInventoryFull:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &765219812
@@ -5016,15 +5019,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DigTool
   digRadius: 1
-  digStrength: 12
-  digDistance: 8
+  digStrength: 10
+  digDistance: 4
   attackSpeed: 1
   toolTier: 0
-  upgradesPerTier: 5
-  strengthUpgradeAmount: 0.5
-  radiusUpgradeAmount: 0.2
+  upgradesPerTier: 10
+  strengthUpgradeAmount: 5
+  radiusUpgradeAmount: 1
   distanceUpgradeAmount: 1
-  attackSpeedUpgradeAmount: 0.1
+  attackSpeedUpgradeAmount: 0.5
   strengthUpgradeLevel: 0
   radiusUpgradeLevel: 0
   distanceUpgradeLevel: 0
@@ -5032,6 +5035,7 @@ MonoBehaviour:
   totalUpgrades: 0
   digCursorPrefab: {fileID: 0}
   playerInventory: {fileID: 765219811}
+  popUpSystem: {fileID: 0}
   pointAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   digAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   aimMode: 1
@@ -5694,8 +5698,8 @@ MonoBehaviour:
   popUpText: {fileID: 1268440615}
   cam: {fileID: 870339655}
   controller: {fileID: 765219808}
-  swing: {fileID: 0}
-  digTool: {fileID: 0}
+  swing: {fileID: 96435162}
+  digTool: {fileID: 1607102722}
 --- !u!114 &1693906671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6432,8 +6436,8 @@ MonoBehaviour:
   popUpText: {fileID: 1639273720}
   cam: {fileID: 870339655}
   controller: {fileID: 765219808}
-  swing: {fileID: 0}
-  digTool: {fileID: 0}
+  swing: {fileID: 96435162}
+  digTool: {fileID: 1607102722}
 --- !u!114 &1919078621
 MonoBehaviour:
   m_ObjectHideFlags: 0

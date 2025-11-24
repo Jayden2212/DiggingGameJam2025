@@ -81,6 +81,12 @@ public class DigTool : MonoBehaviour
     [Tooltip("Player inventory to add mined resources to. If null, will search for it.")]
     public PlayerInventory playerInventory;
     
+    [Header("UI")]
+    [Tooltip("Popup system to show inventory full message. If null, will search for it.")]
+    public PopUpSystem popUpSystem;
+    
+    private bool inventoryFullShown = false; // Track if we've shown the popup this session
+    
     private Camera mainCamera;
     
     [Header("Input")]
@@ -107,6 +113,18 @@ public class DigTool : MonoBehaviour
             {
                 Debug.LogWarning("PlayerInventory not found! Resources won't be collected.");
             }
+        }
+        
+        // Find popup system if not assigned
+        if (popUpSystem == null)
+        {
+            popUpSystem = FindFirstObjectByType<PopUpSystem>();
+        }
+        
+        // Subscribe to inventory events
+        if (playerInventory != null)
+        {
+            playerInventory.onResourceRemoved.AddListener(OnResourceRemoved);
         }
         
         // Store base values for upgrade calculations
@@ -466,6 +484,17 @@ public class DigTool : MonoBehaviour
     
     private void PerformPickaxeHit(RaycastHit hit)
     {
+        // Check if inventory is full
+        if (playerInventory != null && !playerInventory.HasAnySpace())
+        {
+            if (!inventoryFullShown)
+            {
+                inventoryFullShown = true;
+                ShowInventoryFullPopup();
+            }
+            return; // Don't dig if inventory is full
+        }
+        
         TerrainChunk chunk = hit.collider.GetComponent<TerrainChunk>();
         if (chunk != null)
         {
@@ -561,5 +590,29 @@ public class DigTool : MonoBehaviour
                type == VoxelType.GoldOre ||
                type == VoxelType.AmethystOre ||
                type == VoxelType.DiamondOre;
+    }
+    
+    /// <summary>
+    /// Called when resources are removed from inventory (e.g., selling).
+    /// Resets the inventory full popup flag.
+    /// </summary>
+    private void OnResourceRemoved(VoxelType type, int amount)
+    {
+        inventoryFullShown = false;
+    }
+    
+    /// <summary>
+    /// Shows popup when inventory is full.
+    /// </summary>
+    private void ShowInventoryFullPopup()
+    {
+        if (popUpSystem != null)
+        {
+            popUpSystem.PopUp("You cannot hold any more resources.\nGo to the truck and sell.\n(Press 'T' to teleport)");
+        }
+        else
+        {
+            Debug.LogWarning("Inventory full! Go to the truck and sell (Press 'T' to teleport)");
+        }
     }
 }

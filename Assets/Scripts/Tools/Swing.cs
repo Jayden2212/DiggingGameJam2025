@@ -8,6 +8,7 @@ public class Swing : MonoBehaviour
     Animator anim;
     [SerializeField] private InputActionReference clickAction;
     [SerializeField] private DigTool digTool; // Reference to DigTool to sync attack speed
+    private PlayerInventory playerInventory;
     
     private bool isHoldingButton = false;
     private float lastSwingTime = 0f;
@@ -25,6 +26,9 @@ public class Swing : MonoBehaviour
                 digTool = FindFirstObjectByType<DigTool>();
             }
         }
+        
+        // Find PlayerInventory
+        playerInventory = FindFirstObjectByType<PlayerInventory>();
     }
     
     void Update()
@@ -33,6 +37,12 @@ public class Swing : MonoBehaviour
         if (digTool != null && anim != null)
         {
             anim.speed = digTool.attackSpeed;
+        }
+        
+        // Don't swing if inventory is full
+        if (playerInventory != null && !playerInventory.HasAnySpace())
+        {
+            return;
         }
         
         // Continuously swing while holding button
@@ -69,6 +79,12 @@ public class Swing : MonoBehaviour
 
     private void OnClickPerformed(InputAction.CallbackContext ctx)
     {
+        // Don't swing if inventory is full
+        if (playerInventory != null && !playerInventory.HasAnySpace())
+        {
+            return;
+        }
+        
         isHoldingButton = true;
         // Trigger first swing immediately
         anim.SetTrigger("Mining");
