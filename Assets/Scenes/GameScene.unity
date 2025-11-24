@@ -696,10 +696,10 @@ MonoBehaviour:
   terrainSeed: -1
   oreSettings:
   - oreType: 7
-    threshold: 0.2
+    threshold: 0.185
     scale: 0.465
     minY: 25
-    maxY: 36
+    maxY: 37
     seedOffset: 0
   - oreType: 8
     threshold: 0.2

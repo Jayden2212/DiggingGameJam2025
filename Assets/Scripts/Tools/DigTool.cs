@@ -485,6 +485,12 @@ public class DigTool : MonoBehaviour
                 float effectiveStrength = digStrength / layer.hardness;
                 Dictionary<VoxelType, int> minedVoxels = chunk.DigAtPosition(hit.point, digRadius, effectiveStrength);
                 
+                // Spawn layer-specific particle effect
+                if (layer.digEffectPrefab != null)
+                {
+                    SpawnDigEffect(layer.digEffectPrefab, hit.point, hit.normal);
+                }
+                
                 // Add only terrain/rubble to inventory (ores are handled by OreNode prefabs)
                 if (playerInventory != null && minedVoxels != null)
                 {
@@ -523,8 +529,27 @@ public class DigTool : MonoBehaviour
                 }
             }
             
-            // TODO: Play pickaxe swing sound/animation
-            // TODO: Spawn hit particles at hit.point
+        }
+    }
+    
+    void SpawnDigEffect(GameObject effectPrefab, Vector3 position, Vector3 normal)
+    {
+        if (effectPrefab == null) return;
+        
+        // Instantiate the effect facing away from the surface
+        Quaternion rotation = Quaternion.LookRotation(normal);
+        GameObject effect = Instantiate(effectPrefab, position, rotation);
+        
+        // Auto-destroy after particle system finishes (if it has one)
+        ParticleSystem ps = effect.GetComponent<ParticleSystem>();
+        if (ps != null)
+        {
+            Destroy(effect, ps.main.duration + ps.main.startLifetime.constantMax);
+        }
+        else
+        {
+            // No particle system, destroy after 2 seconds
+            Destroy(effect, 2f);
         }
     }
     
