@@ -79,10 +79,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void OnPaused()
-    {
-        pausedPopUp.PopUp("");
-    }
+    // public void OnPaused()
+    // {
+    //     pausedPopUp.PopUp("");
+    // }
 
     public void OnMove(InputValue val)
     {
