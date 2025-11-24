@@ -4,6 +4,10 @@ using UnityEngine.Events;
 
 public class PlayerInventory : MonoBehaviour
 {
+    [Header("Inventory Settings")]
+    [Tooltip("How much the max capacity increases per storage upgrade")]
+    public float inventoryCapacityIncrement = 25f;
+    
     [System.Serializable]
     public class ResourceData
     {
@@ -66,12 +70,12 @@ public class PlayerInventory : MonoBehaviour
             resources.Add(new ResourceData(VoxelType.AmethystOre, 9999, new Color(0.58f, 0.44f, 0.86f), 1f, 40, 40));
             resources.Add(new ResourceData(VoxelType.DiamondOre, 9999, new Color(0.68f, 0.85f, 0.90f), 1f, 100, 50));
             
-            // Rubble/Terrain - low value, no XP, fills inventory slower (weight = 0.1)
-            resources.Add(new ResourceData(VoxelType.Dirt, 9999, new Color(0.55f, 0.4f, 0.3f), 0.1f, 1, 0));
-            resources.Add(new ResourceData(VoxelType.LimeStone, 9999, new Color(0.8f, 0.8f, 0.7f), 0.1f, 2, 0));
-            resources.Add(new ResourceData(VoxelType.Granite, 9999, new Color(0.4f, 0.4f, 0.4f), 0.1f, 3, 0));
-            resources.Add(new ResourceData(VoxelType.Bedrock, 9999, new Color(0.1f, 0.1f, 0.1f), 0.1f, 5, 0));
-            resources.Add(new ResourceData(VoxelType.Molten, 9999, new Color(1f, 0.3f, 0f), 0.1f, 8, 0));
+            // Rubble/Terrain - low value, small XP, fills inventory slower (weight = 0.1)
+            resources.Add(new ResourceData(VoxelType.Dirt, 9999, new Color(0.55f, 0.4f, 0.3f), 0.1f, 1, 1));
+            resources.Add(new ResourceData(VoxelType.LimeStone, 9999, new Color(0.8f, 0.8f, 0.7f), 0.1f, 2, 2));
+            resources.Add(new ResourceData(VoxelType.Granite, 9999, new Color(0.4f, 0.4f, 0.4f), 0.1f, 3, 3));
+            resources.Add(new ResourceData(VoxelType.Bedrock, 9999, new Color(0.1f, 0.1f, 0.1f), 0.1f, 5, 4));
+            resources.Add(new ResourceData(VoxelType.Molten, 9999, new Color(1f, 0.3f, 0f), 0.1f, 8, 5));
         }
         
         // Build lookup dictionary
@@ -186,8 +190,16 @@ public class PlayerInventory : MonoBehaviour
         float currentWeight = GetCurrentWeight();
         float minimumItemWeight = 0.1f; // Smallest possible item (rubble)
         float availableSpace = maxInventoryCapacity - currentWeight;
-        // Check if we can fit at least one smallest item (with tiny epsilon for floating point)
-        return availableSpace < minimumItemWeight - 0.001f;
+        // Be conservative - block when we have less than 2x the minimum item weight
+        // This prevents the race condition where multiple hits queue up
+        bool isFull = availableSpace < (minimumItemWeight * 2f);
+        
+        if (isFull)
+        {
+            Debug.Log($"IsFull() = TRUE. Current: {currentWeight}, Max: {maxInventoryCapacity}, Available: {availableSpace}, Threshold: {minimumItemWeight * 2f}");
+        }
+        
+        return isFull;
     }
     
     // Get current total weight in inventory

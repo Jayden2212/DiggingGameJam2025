@@ -72,8 +72,9 @@ public class PlayerProgression : MonoBehaviour
     
     void LevelUp()
     {
+        int xpRequired = GetXPRequiredForNextLevel();
+        currentXP -= xpRequired; // Subtract only what was needed, keep overflow
         level++;
-        currentXP = 0; // Reset XP for next level (or subtract required if you want overflow)
         
         // Grant skill points
         skillPoints += skillPointsPerLevel;

@@ -2,22 +2,20 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-/// <summary>
-/// Pickaxe tool for mining terrain with discrete hits.
-/// 
-/// PICKAXE SYSTEM:
-/// - Mines in discrete hits with cooldown between swings
-/// - Hold button to keep swinging automatically
-/// - Each hit deals digStrength damage to terrain
-/// 
-/// UPGRADE SYSTEM:
-/// - Strength: Damage per hit
-/// - Radius: Size of mining area
-/// - Distance: Reach distance
-/// - Attack Speed: Time between swings (cooldown)
-/// - Every X upgrades (default 5) automatically increases tool tier
-/// - Tool tier determines which terrain layers can be dug
-/// </summary>
+// Pickaxe tool for mining terrain with discrete hits.
+// 
+// PICKAXE SYSTEM:
+// - Mines in discrete hits with cooldown between swings
+// - Hold button to keep swinging automatically
+// - Each hit deals digStrength damage to terrain
+// 
+// UPGRADE SYSTEM:
+// - Strength: Damage per hit
+// - Radius: Size of mining area
+// - Distance: Reach distance
+// - Attack Speed: Time between swings (cooldown)
+// - Every X upgrades (default 5) automatically increases tool tier
+// - Tool tier determines which terrain layers can be dug
 public class DigTool : MonoBehaviour
 {
     [Header("Pickaxe Settings")]
@@ -86,6 +84,10 @@ public class DigTool : MonoBehaviour
     public NotificationSystem notificationSystem;
     
     private bool inventoryFullShown = false; // Track if we've shown the notification this session
+    private float lastInventoryFullNotificationTime = -999f; // Track when we last showed the inventory full notification
+    private float inventoryFullNotificationCooldown = 3f; // Show notification at most once every 3 seconds
+    private float lastToolTierWarningTime = -999f; // Track when we last showed the tool tier warning
+    private float toolTierWarningCooldown = 3f; // Show warning at most once every 3 seconds
     
     private Camera mainCamera;
     
@@ -176,10 +178,8 @@ public class DigTool : MonoBehaviour
     
     // ===== UPGRADE SYSTEM METHODS =====
     
-    /// <summary>
-    /// Upgrade the dig strength. Costs 1 skill point.
-    /// Returns true if upgrade was successful, false if not.
-    /// </summary>
+    // Upgrade the dig strength. Costs 1 skill point.
+    // Returns true if upgrade was successful, false if not.
     public bool UpgradeStrength()
     {
         strengthUpgradeLevel++;
@@ -190,11 +190,9 @@ public class DigTool : MonoBehaviour
         Debug.Log($"Strength upgraded to level {strengthUpgradeLevel}! New strength: {digStrength:F1}");
         return true;
     }
-    
-    /// <summary>
-    /// Upgrade the dig radius. Costs 1 skill point.
-    /// Returns true if upgrade was successful, false if not.
-    /// </summary>
+
+    // Upgrade the dig radius. Costs 1 skill point.
+    // Returns true if upgrade was successful, false if not.
     public bool UpgradeRadius()
     {
         radiusUpgradeLevel++;
@@ -212,10 +210,8 @@ public class DigTool : MonoBehaviour
         return true;
     }
     
-    /// <summary>
-    /// Upgrade the dig distance. Costs 1 skill point.
-    /// Returns true if upgrade was successful, false if not.
-    /// </summary>
+    // Upgrade the dig distance. Costs 1 skill point.
+    // Returns true if upgrade was successful, false if not.
     public bool UpgradeDistance()
     {
         distanceUpgradeLevel++;
@@ -227,10 +223,8 @@ public class DigTool : MonoBehaviour
         return true;
     }
     
-    /// <summary>
-    /// Upgrade the attack speed. Costs 1 skill point.
-    /// Returns true if upgrade was successful, false if not.
-    /// </summary>
+    // Upgrade the attack speed. Costs 1 skill point.
+    // Returns true if upgrade was successful, false if not.
     public bool UpgradeAttackSpeed()
     {
         attackSpeedUpgradeLevel++;
@@ -242,9 +236,7 @@ public class DigTool : MonoBehaviour
         return true;
     }
     
-    /// <summary>
-    /// Increments total upgrades and checks if tool tier should increase
-    /// </summary>
+    // Increments total upgrades and checks if tool tier should increase
     private void IncrementTotalUpgrades()
     {
         totalUpgrades++;
@@ -260,9 +252,7 @@ public class DigTool : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Called when the tool tier increases. Override or add listeners for special effects.
-    /// </summary>
+    // Called when the tool tier increases. Override or add listeners for special effects.
     private void OnToolTierUp(int newTier)
     {
         Debug.Log($"★★★ TOOL TIER INCREASED TO {newTier}! ★★★");
@@ -270,25 +260,19 @@ public class DigTool : MonoBehaviour
         // Example: Play tier up animation, unlock new dig areas, etc.
     }
     
-    /// <summary>
-    /// Get the current upgrade progress toward the next tier
-    /// </summary>
+    // Get the current upgrade progress toward the next tier
     public int GetUpgradesUntilNextTier()
     {
         return upgradesPerTier - (totalUpgrades % upgradesPerTier);
     }
     
-    /// <summary>
-    /// Get the progress percentage toward the next tier (0-1)
-    /// </summary>
+    // Get the progress percentage toward the next tier (0-1)
     public float GetTierProgressPercentage()
     {
         return (float)(totalUpgrades % upgradesPerTier) / upgradesPerTier;
     }
     
-    /// <summary>
-    /// Reset all upgrades (useful for testing or new game)
-    /// </summary>
+    // Reset all upgrades (useful for testing or new game)
     public void ResetUpgrades()
     {
         strengthUpgradeLevel = 0;
@@ -313,9 +297,7 @@ public class DigTool : MonoBehaviour
     
     // ===== DEBUG/TESTING METHODS =====
     
-    /// <summary>
-    /// Add skill points and upgrade stats (for testing)
-    /// </summary>
+    // Add skill points and upgrade stats (for testing)
     public void TestUpgradeSequence(int pointsToSpend)
     {
         Debug.Log($"=== Testing {pointsToSpend} upgrades ===");
@@ -460,9 +442,7 @@ public class DigTool : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Performs a single pickaxe hit at the target location
-    /// </summary>
+    // Performs a single pickaxe hit at the target location
     // Called by animation event to trigger hit at the right moment
     public void TriggerHitFromAnimation()
     {
@@ -496,9 +476,11 @@ public class DigTool : MonoBehaviour
         if (playerInventory != null && playerInventory.IsFull())
         {
             Debug.Log($"PerformPickaxeHit: Inventory FULL! Weight: {playerInventory.GetCurrentWeight()}/{playerInventory.maxInventoryCapacity}");
-            if (!inventoryFullShown)
+            
+            // Show notification with cooldown
+            if (Time.time - lastInventoryFullNotificationTime >= inventoryFullNotificationCooldown)
             {
-                inventoryFullShown = true;
+                lastInventoryFullNotificationTime = Time.time;
                 ShowInventoryFullPopup();
             }
             return;
@@ -516,7 +498,26 @@ public class DigTool : MonoBehaviour
                 {
                     // Tool too weak - show feedback
                     Debug.Log($"Tool tier {toolTier} too weak for {layer.name} (requires tier {layer.requiredToolTier})");
-                    // TODO: Play "can't mine" sound/effect
+                    
+                    // Show notification if cooldown has passed
+                    if (Time.time - lastToolTierWarningTime >= toolTierWarningCooldown)
+                    {
+                        lastToolTierWarningTime = Time.time;
+                        ShowToolTierWarning(layer.name, layer.requiredToolTier);
+                    }
+                    
+                    return;
+                }
+                
+                // Double-check inventory space right before digging (in case it filled up between checks)
+                if (playerInventory != null && playerInventory.IsFull())
+                {
+                    Debug.Log($"PerformPickaxeHit: Inventory became full, aborting dig");
+                    if (Time.time - lastInventoryFullNotificationTime >= inventoryFullNotificationCooldown)
+                    {
+                        lastInventoryFullNotificationTime = Time.time;
+                        ShowInventoryFullPopup();
+                    }
                     return;
                 }
                 
@@ -531,9 +532,12 @@ public class DigTool : MonoBehaviour
                 }
                 
                 // Add only terrain/rubble to inventory (ores are handled by OreNode prefabs)
+                // Process items one at a time until inventory is full
                 if (playerInventory != null && minedVoxels != null)
                 {
-                    bool anyItemsAdded = false;
+                    int itemsAdded = 0;
+                    int itemsDiscarded = 0;
+                    
                     foreach (var kvp in minedVoxels)
                     {
                         VoxelType voxelType = kvp.Key;
@@ -542,28 +546,54 @@ public class DigTool : MonoBehaviour
                         // Only add non-ore terrain types (rubble)
                         if (voxelType != VoxelType.Air && !IsOreType(voxelType))
                         {
+                            // Try to add items one at a time until inventory is full
                             int added = playerInventory.AddResource(voxelType, count);
-                            if (added > 0) anyItemsAdded = true;
+                            itemsAdded += added;
+                            itemsDiscarded += (count - added);
+                            
+                            // If we couldn't add all items, inventory is full - stop processing
+                            if (added < count)
+                            {
+                                break;
+                            }
                         }
                     }
                     
-                    // Show message if inventory is full and nothing could be added
-                    if (!anyItemsAdded && !inventoryFullShown)
+                    // Show notification if inventory became full and we discarded items
+                    if (itemsDiscarded > 0)
                     {
-                        inventoryFullShown = true;
-                        ShowInventoryFullPopup();
+                        if (Time.time - lastInventoryFullNotificationTime >= inventoryFullNotificationCooldown)
+                        {
+                            lastInventoryFullNotificationTime = Time.time;
+                            ShowInventoryFullPopup();
+                        }
                     }
                 }
             }
             else
             {
+                // Double-check inventory space right before digging (in case it filled up between checks)
+                if (playerInventory != null && playerInventory.IsFull())
+                {
+                    Debug.Log($"PerformPickaxeHit: Inventory became full, aborting dig (no layer path)");
+                    if (Time.time - lastInventoryFullNotificationTime >= inventoryFullNotificationCooldown)
+                    {
+                        lastInventoryFullNotificationTime = Time.time;
+                        ShowInventoryFullPopup();
+                    }
+                    return;
+                }
+                
                 // No layer info, use default strength
                 Dictionary<VoxelType, int> minedVoxels = chunk.DigAtPosition(hit.point, digRadius, digStrength);
                 
                 // Add only terrain/rubble to inventory (ores are handled by OreNode prefabs)
+                // Process items one at a time until inventory is full
                 if (playerInventory != null && minedVoxels != null)
                 {
-                    bool anyItemsAdded = false;
+                    int itemsAdded = 0;
+                    int itemsDiscarded = 0;
+                    
                     foreach (var kvp in minedVoxels)
                     {
                         VoxelType voxelType = kvp.Key;
@@ -572,16 +602,27 @@ public class DigTool : MonoBehaviour
                         // Only add non-ore terrain types (rubble)
                         if (voxelType != VoxelType.Air && !IsOreType(voxelType))
                         {
+                            // Try to add items one at a time until inventory is full
                             int added = playerInventory.AddResource(voxelType, count);
-                            if (added > 0) anyItemsAdded = true;
+                            itemsAdded += added;
+                            itemsDiscarded += (count - added);
+                            
+                            // If we couldn't add all items, inventory is full - stop processing
+                            if (added < count)
+                            {
+                                break;
+                            }
                         }
                     }
                     
-                    // Show message if inventory is full and nothing could be added
-                    if (!anyItemsAdded && !inventoryFullShown)
+                    // Show notification if inventory became full and we discarded items
+                    if (itemsDiscarded > 0)
                     {
-                        inventoryFullShown = true;
-                        ShowInventoryFullPopup();
+                        if (Time.time - lastInventoryFullNotificationTime >= inventoryFullNotificationCooldown)
+                        {
+                            lastInventoryFullNotificationTime = Time.time;
+                            ShowInventoryFullPopup();
+                        }
                     }
                 }
             }
@@ -620,37 +661,50 @@ public class DigTool : MonoBehaviour
                type == VoxelType.DiamondOre;
     }
     
-    /// <summary>
-    /// Called when resources are removed from inventory (e.g., selling).
-    /// Resets the inventory full popup flag.
-    /// </summary>
+    // Called when resources are removed from inventory (e.g., selling).
+    // Resets the inventory full popup flag.
     private void OnResourceRemoved(VoxelType type, int amount)
     {
         inventoryFullShown = false;
     }
     
-    /// <summary>
-    /// Public method to trigger inventory full message (called from Swing when blocking a hit)
-    /// </summary>
-    public void TriggerInventoryFullMessage()
+    // Shows notification when tool tier is too low for a layer.
+    private void ShowToolTierWarning(string layerName, int requiredTier)
     {
-        if (!inventoryFullShown)
+        if (notificationSystem != null)
         {
-            inventoryFullShown = true;
-            ShowInventoryFullPopup();
+            notificationSystem.ShowNotification($"Tool Tier {requiredTier} required to mine {layerName}!");
+        }
+        else
+        {
+            Debug.LogWarning($"Tool Tier {requiredTier} required to mine {layerName}!");
         }
     }
     
-    /// <summary>
-    /// Shows notification when inventory is full.
-    /// </summary>
+    // Public method to trigger inventory full message (called from Swing when blocking a hit)
+    public void TriggerInventoryFullMessage()
+    {
+        Debug.Log($"TriggerInventoryFullMessage called. Time since last: {Time.time - lastInventoryFullNotificationTime}");
+        if (Time.time - lastInventoryFullNotificationTime >= inventoryFullNotificationCooldown)
+        {
+            Debug.Log("Cooldown passed, showing popup");
+            lastInventoryFullNotificationTime = Time.time;
+            ShowInventoryFullPopup();
+        }
+        else
+        {
+            Debug.Log($"Cooldown not passed yet. Need {inventoryFullNotificationCooldown - (Time.time - lastInventoryFullNotificationTime)} more seconds");
+        }
+    }
+    
+    // Shows notification when inventory is full.
     private void ShowInventoryFullPopup()
     {
         Debug.Log("ShowInventoryFullPopup called!");
         if (notificationSystem != null)
         {
             Debug.Log("Showing notification via NotificationSystem");
-            notificationSystem.ShowNotification("Inventory Full!\nGo to the truck and sell (Press 'T' to teleport)");
+            notificationSystem.ShowNotification("Inventory Full!\nGo to the truck and sell\n(Press 'T' to teleport)");
         }
         else
         {

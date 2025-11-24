@@ -46,7 +46,7 @@ public class ButtonUpgrade : MonoBehaviour
         {
             if (inventory != null)
             {
-                inventory.maxInventoryCapacity += 50f; // Increase by 50 each upgrade
+                inventory.maxInventoryCapacity += inventory.inventoryCapacityIncrement;
                 upgraded = true;
                 Debug.Log($"Storage upgraded! New capacity: {inventory.maxInventoryCapacity}");
             }

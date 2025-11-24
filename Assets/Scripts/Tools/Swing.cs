@@ -12,6 +12,7 @@ public class Swing : MonoBehaviour
     
     private bool isHoldingButton = false;
     private float lastSwingTime = 0f;
+    private float lastNotificationTime = -999f; // Track when we last showed notification
 
     void Start()
     {
@@ -39,7 +40,7 @@ public class Swing : MonoBehaviour
             anim.speed = digTool.attackSpeed;
         }
         
-        // Don't swing if inventory is completely full
+        // Don't swing if inventory is completely full (but don't show notification here - only on click)
         if (playerInventory != null && playerInventory.IsFull())
         {
             return;
@@ -82,6 +83,12 @@ public class Swing : MonoBehaviour
         // Don't swing if inventory is completely full
         if (playerInventory != null && playerInventory.IsFull())
         {
+            // Show notification when trying to click with full inventory
+            if (digTool != null)
+            {
+                Debug.Log($"Swing.OnClickPerformed: Calling TriggerInventoryFullMessage");
+                digTool.TriggerInventoryFullMessage();
+            }
             return;
         }
         
