@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class StartGame : MonoBehaviour
 {
-    public void Start()
+    public void PlayStart()
     {
         SceneManager.LoadScene("GameScene");
     }
