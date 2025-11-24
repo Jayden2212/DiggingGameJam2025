@@ -11,6 +11,8 @@ public class PlayerCam : MonoBehaviour
     public static float sensY = 5f;
     private Vector2 mouseInput;
     float xRotation, yRotation;
+    
+    public bool isEnabled = true;
 
     void Start()
     {
@@ -34,6 +36,8 @@ public class PlayerCam : MonoBehaviour
 
     void Update()
     {
+        if (!isEnabled) return;
+        
         float mouseX = mouseInput.x * Time.deltaTime * sensX;
         float mouseY = mouseInput.y * Time.deltaTime * sensY;
 
@@ -47,6 +51,7 @@ public class PlayerCam : MonoBehaviour
 
     public void OnLook(InputValue val)
     {
+        if (!isEnabled) return;
         mouseInput = val.Get<Vector2>();
     }
     

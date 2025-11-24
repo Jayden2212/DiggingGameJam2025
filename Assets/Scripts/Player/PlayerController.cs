@@ -5,6 +5,8 @@ public class PlayerController : MonoBehaviour
 {
     Rigidbody rb;
     Vector2 movementVector;
+    
+    public bool isEnabled = true;
 
     [SerializeField] private Transform orientation;
     [SerializeField] private PopUpSystem pausedPopUp;
@@ -59,6 +61,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!isEnabled) return;
+        
         // calculate movement direction
         Vector3 movement = orientation.forward * movementVector.y +
         orientation.right * movementVector.x;
@@ -82,11 +86,13 @@ public class PlayerController : MonoBehaviour
 
     public void OnMove(InputValue val)
     {
+        if (!isEnabled) return;
         movementVector = val.Get<Vector2>();
     }
 
     public void OnJump()
     {
+        if (!isEnabled) return;
         if (readyToJump && grounded)
         {
             readyToJump = false;
