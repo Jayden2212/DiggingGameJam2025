@@ -26,6 +26,7 @@ public class NotificationSystem : MonoBehaviour
     
     private CanvasGroup canvasGroup;
     private Coroutine currentNotification;
+    private bool isPersistent = false;
     
     void Awake()
     {
@@ -41,10 +42,11 @@ public class NotificationSystem : MonoBehaviour
         notificationPanel.SetActive(false);
     }
     
-    /// <summary>
-    /// Shows a notification message on screen.
-    /// </summary>
-    public void ShowNotification(string message)
+    // Shows a notification message on screen.
+    /// <param name="message">The message to display</param>
+    /// <param name="color">Text color (optional, uses current color if not specified)</param>
+    /// <param name="persistent">If true, notification stays visible until HideNotification is called</param>
+    public void ShowNotification(string message, Color? color = null, bool persistent = false)
     {
         // If there's already a notification showing, stop it
         if (currentNotification != null)
@@ -52,7 +54,27 @@ public class NotificationSystem : MonoBehaviour
             StopCoroutine(currentNotification);
         }
         
+        isPersistent = persistent;
+        
+        // Set text color if specified
+        if (color.HasValue)
+        {
+            notificationText.color = color.Value;
+        }
+        
         currentNotification = StartCoroutine(DisplayNotification(message));
+    }
+    
+    // Hides the current notification (useful for persistent notifications)
+    public void HideNotification()
+    {
+        if (currentNotification != null)
+        {
+            StopCoroutine(currentNotification);
+        }
+        
+        isPersistent = false;
+        currentNotification = StartCoroutine(FadeOutNotification());
     }
     
     private IEnumerator DisplayNotification(string message)
@@ -71,11 +93,34 @@ public class NotificationSystem : MonoBehaviour
         }
         canvasGroup.alpha = 1f;
         
+        // If persistent, don't fade out - just stay visible
+        if (isPersistent)
+        {
+            currentNotification = null;
+            yield break;
+        }
+        
         // Wait for display duration
         yield return new WaitForSeconds(displayDuration);
         
         // Fade out
         elapsed = 0f;
+        while (elapsed < fadeOutDuration)
+        {
+            elapsed += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsed / fadeOutDuration);
+            yield return null;
+        }
+        canvasGroup.alpha = 0f;
+        
+        notificationPanel.SetActive(false);
+        currentNotification = null;
+    }
+    
+    private IEnumerator FadeOutNotification()
+    {
+        // Fade out
+        float elapsed = 0f;
         while (elapsed < fadeOutDuration)
         {
             elapsed += Time.deltaTime;

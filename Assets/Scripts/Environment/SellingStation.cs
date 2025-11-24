@@ -6,6 +6,10 @@ public class SellingStation : MonoBehaviour, IInteractable
     [Header("References")]
     public PopUpSystem popUpSystem;
     
+    [Header("Interaction Prompt")]
+    public NotificationSystem notificationSystem;
+    public Color promptColor = Color.white;
+    
     private PlayerInventory inventory;
     private PlayerProgression progression;
     
@@ -26,9 +30,36 @@ public class SellingStation : MonoBehaviour, IInteractable
     
     public void Interact()
     {
-        if (popUpSystem != null)
+        // Toggle the menu if it's already open
+        if (popUpSystem != null && popUpSystem.popUpBox != null && popUpSystem.popUpBox.activeSelf)
         {
-            popUpSystem.PopUp("SELLING STATION");
+            popUpSystem.ClosePopUp();
+        }
+        else
+        {
+            // Hide the interaction prompt when opening the menu
+            HidePrompt();
+            
+            if (popUpSystem != null)
+            {
+                popUpSystem.PopUp("SELL YOUR MATERIALS HERE");
+            }
+        }
+    }
+    
+    public void ShowPrompt()
+    {
+        if (notificationSystem != null)
+        {
+            notificationSystem.ShowNotification("Press E to Sell", promptColor, persistent: true);
+        }
+    }
+    
+    public void HidePrompt()
+    {
+        if (notificationSystem != null)
+        {
+            notificationSystem.HideNotification();
         }
     }
     
@@ -36,7 +67,6 @@ public class SellingStation : MonoBehaviour, IInteractable
     {
         if (inventory == null || progression == null) return;
         
-        int totalMoney = 0;
         int totalXP = 0;
         int totalItemsSold = 0;
         
@@ -57,10 +87,8 @@ public class SellingStation : MonoBehaviour, IInteractable
                 var resourceData = inventory.GetResourceData(resourceType);
                 if (resourceData != null)
                 {
-                    int moneyGained = resourceData.sellValue * amount;
                     int xpGained = resourceData.xpValue * amount;
                     
-                    totalMoney += moneyGained;
                     totalXP += xpGained;
                     totalItemsSold += amount;
                     
@@ -76,14 +104,14 @@ public class SellingStation : MonoBehaviour, IInteractable
             progression.AddXP(totalXP);
         }
         
-        // Display results (you can enhance this with a proper UI)
+        // Display results
         if (totalItemsSold > 0)
         {
-            Debug.Log($"Sold {totalItemsSold} items for ${totalMoney} and {totalXP} XP!");
+            Debug.Log($"Sold {totalItemsSold} items for {totalXP} XP!");
             
             if (popUpSystem != null)
             {
-                popUpSystem.PopUp($"SOLD!\n{totalItemsSold} items\n${totalMoney}\n+{totalXP} XP");
+                popUpSystem.PopUp($"SOLD {totalItemsSold} ITEMS!\n+{totalXP} XP");
             }
         }
         else
@@ -92,7 +120,7 @@ public class SellingStation : MonoBehaviour, IInteractable
             
             if (popUpSystem != null)
             {
-                popUpSystem.PopUp("SELL STATION\nNo items to sell!");
+                popUpSystem.PopUp("NO ITEMS TO SELL!!");
             }
         }
     }
