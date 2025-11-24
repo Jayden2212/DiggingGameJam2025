@@ -673,7 +673,7 @@ public class DigTool : MonoBehaviour
     {
         if (notificationSystem != null)
         {
-            notificationSystem.ShowNotification($"Tool Tier {requiredTier} required to mine {layerName}!");
+            notificationSystem.ShowNotification($"Tool Tier {requiredTier} required to mine {layerName}!", Color.red, false, 3);
         }
         else
         {
@@ -704,7 +704,7 @@ public class DigTool : MonoBehaviour
         if (notificationSystem != null)
         {
             Debug.Log("Showing notification via NotificationSystem");
-            notificationSystem.ShowNotification("Inventory Full!\nGo to the truck and sell\n(Press 'T' to teleport)");
+            notificationSystem.ShowNotification("Inventory Full!\nGo to the truck and sell\n(Press 'T' to teleport)", Color.red, false, 3);
         }
         else
         {

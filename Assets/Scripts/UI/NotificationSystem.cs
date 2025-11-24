@@ -46,7 +46,8 @@ public class NotificationSystem : MonoBehaviour
     /// <param name="message">The message to display</param>
     /// <param name="color">Text color (optional, uses current color if not specified)</param>
     /// <param name="persistent">If true, notification stays visible until HideNotification is called</param>
-    public void ShowNotification(string message, Color? color = null, bool persistent = false)
+    /// <param name="duration">Override display duration (optional, uses default if not specified)</param>
+    public void ShowNotification(string message, Color? color = null, bool persistent = false, float? duration = null)
     {
         // If there's already a notification showing, stop it
         if (currentNotification != null)
@@ -62,7 +63,7 @@ public class NotificationSystem : MonoBehaviour
             notificationText.color = color.Value;
         }
         
-        currentNotification = StartCoroutine(DisplayNotification(message));
+        currentNotification = StartCoroutine(DisplayNotification(message, duration));
     }
     
     // Hides the current notification (useful for persistent notifications)
@@ -77,7 +78,7 @@ public class NotificationSystem : MonoBehaviour
         currentNotification = StartCoroutine(FadeOutNotification());
     }
     
-    private IEnumerator DisplayNotification(string message)
+    private IEnumerator DisplayNotification(string message, float? customDuration = null)
     {
         // Set the message
         notificationText.text = message;
@@ -100,8 +101,9 @@ public class NotificationSystem : MonoBehaviour
             yield break;
         }
         
-        // Wait for display duration
-        yield return new WaitForSeconds(displayDuration);
+        // Wait for display duration (use custom duration if provided)
+        float waitTime = customDuration ?? displayDuration;
+        yield return new WaitForSeconds(waitTime);
         
         // Fade out
         elapsed = 0f;

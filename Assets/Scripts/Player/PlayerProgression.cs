@@ -17,7 +17,10 @@ public class PlayerProgression : MonoBehaviour
     [Tooltip("XP required for first level up")]
     public int baseXPRequired = 100;
     
-    [Tooltip("How much XP requirement increases per level (1.5 = 50% increase)")]
+    [Tooltip("Use linear XP scaling (true) or exponential scaling (false)")]
+    public bool useLinearScaling = false;
+    
+    [Tooltip("How much XP requirement increases per level. Linear: adds this amount each level. Exponential: multiplies by this value (1.5 = 50% increase)")]
     public float xpScaling = 1.5f;
     
     [Header("Skill Points")]
@@ -61,7 +64,18 @@ public class PlayerProgression : MonoBehaviour
     
     public int GetXPRequiredForNextLevel()
     {
-        return Mathf.RoundToInt(baseXPRequired * Mathf.Pow(xpScaling, level - 1));
+        if (useLinearScaling)
+        {
+            // Linear: baseXP + (scaling * level)
+            // Example: 100 + (50 * 1) = 150, 100 + (50 * 2) = 200, etc.
+            return Mathf.RoundToInt(baseXPRequired + (xpScaling * (level - 1)));
+        }
+        else
+        {
+            // Exponential: baseXP * (scaling ^ level)
+            // Example: 100 * (1.5 ^ 1) = 150, 100 * (1.5 ^ 2) = 225, etc.
+            return Mathf.RoundToInt(baseXPRequired * Mathf.Pow(xpScaling, level - 1));
+        }
     }
     
     public float GetXPProgress()

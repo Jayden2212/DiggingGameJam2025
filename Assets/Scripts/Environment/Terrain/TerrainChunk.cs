@@ -187,6 +187,16 @@ public class TerrainChunk : MonoBehaviour
     
     public void InitializeTerrain()
     {
+        // Clear old ore nodes before regenerating
+        foreach (var node in oreNodes)
+        {
+            if (node != null)
+            {
+                Destroy(node);
+            }
+        }
+        oreNodes.Clear();
+        
         voxelData = new VoxelData();
         
         // Apply terrain generation settings from inspector
@@ -214,6 +224,12 @@ public class TerrainChunk : MonoBehaviour
         meshGenerator = new VoxelMeshGenerator(voxelData);
         // Pass subsurface layers to generator
         meshGenerator.SubsurfaceLayers = subsurfaceLayers;
+        
+        // Regenerate the mesh to visually update the terrain
+        RegenerateMesh();
+        
+        // Spawn new ore nodes
+        SpawnOreNodes();
     }
     
     void SpawnOreNodes()
