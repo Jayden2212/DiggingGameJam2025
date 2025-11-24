@@ -5,19 +5,24 @@ public class PopUpSystem : MonoBehaviour
 {
     public GameObject popUpBox;
     public TMP_Text popUpText;
-    public PlayerCam cam;
     public PlayerController controller;
     public Swing swing;
     public DigTool digTool;
 
     float tempSensX, tempSensY, tempMovementSpeed, tempJumpForce;
+    bool valuesStored = false;
 
     void GetTempValues()
     {
-        tempSensX = cam.sensX;
-        tempSensY = cam.sensY;
-        tempMovementSpeed = controller.movementSpeed;
-        tempJumpForce = controller.jumpForce;
+        // Only store values if not already stored (prevent overwriting with zeroed values)
+        if (!valuesStored)
+        {
+            tempSensX = PlayerCam.sensX;
+            tempSensY = PlayerCam.sensY;
+            tempMovementSpeed = controller.movementSpeed;
+            tempJumpForce = controller.jumpForce;
+            valuesStored = true;
+        }
     }
 
     public void PopUp(string text)
@@ -27,8 +32,8 @@ public class PopUpSystem : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        cam.sensX = 0f;
-        cam.sensY = 0f;
+        PlayerCam.sensX = 0f;
+        PlayerCam.sensY = 0f;
         controller.movementSpeed = 0f;
         controller.jumpForce = 0f;
         
@@ -47,8 +52,8 @@ public class PopUpSystem : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        cam.sensX = tempSensX;
-        cam.sensY = tempSensY;
+        PlayerCam.sensX = tempSensX;
+        PlayerCam.sensY = tempSensY;
         controller.movementSpeed = tempMovementSpeed;
         controller.jumpForce = tempJumpForce;
         
@@ -59,5 +64,8 @@ public class PopUpSystem : MonoBehaviour
             digTool.enabled = true;
 
         popUpBox.SetActive(false);
+        
+        // Reset flag so values can be stored again next time
+        valuesStored = false;
     }
 }

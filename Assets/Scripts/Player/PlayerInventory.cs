@@ -34,8 +34,8 @@ public class PlayerInventory : MonoBehaviour
     }
     
     [Header("Inventory Settings")]
-    [Tooltip("Maximum capacity for each ore type")]
-    public int defaultMaxCapacity = 100;
+    [Tooltip("Total inventory capacity (weight-based)")]
+    public float maxInventoryCapacity = 200f;
     
     [Header("Resource Storage")]
     public List<ResourceData> resources = new List<ResourceData>();
@@ -44,6 +44,7 @@ public class PlayerInventory : MonoBehaviour
     public UnityEvent<VoxelType, int> onResourceAdded; // Fires when resource is added (type, amount)
     public UnityEvent<VoxelType, int> onResourceRemoved; // Fires when resource is removed
     public UnityEvent<VoxelType> onResourceFull; // Fires when a resource reaches max capacity
+    public UnityEvent onInventoryFull; // Fires when total inventory is full
     
     // Quick lookup dictionary
     private Dictionary<VoxelType, ResourceData> resourceLookup = new Dictionary<VoxelType, ResourceData>();
@@ -59,17 +60,18 @@ public class PlayerInventory : MonoBehaviour
         if (resources.Count == 0)
         {
             // Ores - high value, high XP, fills inventory faster (weight = 1.0)
-            resources.Add(new ResourceData(VoxelType.CopperOre, defaultMaxCapacity, new Color(0.72f, 0.45f, 0.20f), 1f, 5, 10));
-            resources.Add(new ResourceData(VoxelType.IronOre, defaultMaxCapacity, new Color(0.75f, 0.75f, 0.75f), 1f, 10, 15));
-            resources.Add(new ResourceData(VoxelType.GoldOre, defaultMaxCapacity, new Color(1f, 0.84f, 0f), 1f, 20, 25));
-            resources.Add(new ResourceData(VoxelType.AmethystOre, defaultMaxCapacity, new Color(0.58f, 0.44f, 0.86f), 1f, 40, 40));
-            resources.Add(new ResourceData(VoxelType.DiamondOre, defaultMaxCapacity, new Color(0.68f, 0.85f, 0.90f), 1f, 100, 50));
+            resources.Add(new ResourceData(VoxelType.CopperOre, 9999, new Color(0.72f, 0.45f, 0.20f), 1f, 5, 10));
+            resources.Add(new ResourceData(VoxelType.IronOre, 9999, new Color(0.75f, 0.75f, 0.75f), 1f, 10, 15));
+            resources.Add(new ResourceData(VoxelType.GoldOre, 9999, new Color(1f, 0.84f, 0f), 1f, 20, 25));
+            resources.Add(new ResourceData(VoxelType.AmethystOre, 9999, new Color(0.58f, 0.44f, 0.86f), 1f, 40, 40));
+            resources.Add(new ResourceData(VoxelType.DiamondOre, 9999, new Color(0.68f, 0.85f, 0.90f), 1f, 100, 50));
             
             // Rubble/Terrain - low value, no XP, fills inventory slower (weight = 0.1)
-            resources.Add(new ResourceData(VoxelType.Dirt, defaultMaxCapacity * 10, new Color(0.55f, 0.4f, 0.3f), 0.1f, 1, 0));
-            resources.Add(new ResourceData(VoxelType.LimeStone, defaultMaxCapacity * 10, new Color(0.8f, 0.8f, 0.7f), 0.1f, 2, 0));
-            resources.Add(new ResourceData(VoxelType.Granite, defaultMaxCapacity * 10, new Color(0.4f, 0.4f, 0.4f), 0.1f, 3, 0));
-            resources.Add(new ResourceData(VoxelType.Bedrock, defaultMaxCapacity * 10, new Color(0.1f, 0.1f, 0.1f), 0.1f, 5, 0));
+            resources.Add(new ResourceData(VoxelType.Dirt, 9999, new Color(0.55f, 0.4f, 0.3f), 0.1f, 1, 0));
+            resources.Add(new ResourceData(VoxelType.LimeStone, 9999, new Color(0.8f, 0.8f, 0.7f), 0.1f, 2, 0));
+            resources.Add(new ResourceData(VoxelType.Granite, 9999, new Color(0.4f, 0.4f, 0.4f), 0.1f, 3, 0));
+            resources.Add(new ResourceData(VoxelType.Bedrock, 9999, new Color(0.1f, 0.1f, 0.1f), 0.1f, 5, 0));
+            resources.Add(new ResourceData(VoxelType.Molten, 9999, new Color(1f, 0.3f, 0f), 0.1f, 8, 0));
         }
         
         // Build lookup dictionary
@@ -94,19 +96,24 @@ public class PlayerInventory : MonoBehaviour
         
         ResourceData resource = resourceLookup[type];
         
-        // Calculate how much we can actually add
-        int spaceAvailable = resource.maxCapacity - resource.amount;
-        int amountToAdd = Mathf.Min(amount, spaceAvailable);
+        // Calculate how much weight this would add
+        float weightPerUnit = resource.inventoryWeight;
+        float currentTotalWeight = GetCurrentWeight();
+        float availableWeight = maxInventoryCapacity - currentTotalWeight;
+        
+        // Calculate how many units we can add based on available weight
+        int maxCanAdd = Mathf.FloorToInt(availableWeight / weightPerUnit);
+        int amountToAdd = Mathf.Min(amount, maxCanAdd);
         
         if (amountToAdd > 0)
         {
             resource.amount += amountToAdd;
             onResourceAdded?.Invoke(type, amountToAdd);
             
-            // Check if full
-            if (resource.IsFull)
+            // Check if inventory is now full
+            if (GetCurrentWeight() >= maxInventoryCapacity)
             {
-                onResourceFull?.Invoke(type);
+                onInventoryFull?.Invoke();
             }
         }
         
@@ -160,24 +167,34 @@ public class PlayerInventory : MonoBehaviour
         if (resourceLookup.ContainsKey(type))
         {
             ResourceData resource = resourceLookup[type];
-            return resource.amount + amount <= resource.maxCapacity;
+            float weightNeeded = resource.inventoryWeight * amount;
+            float currentWeight = GetCurrentWeight();
+            return currentWeight + weightNeeded <= maxInventoryCapacity;
         }
         return false;
+    }
+    
+    // Check if inventory has any space at all
+    public bool HasAnySpace()
+    {
+        return GetCurrentWeight() < maxInventoryCapacity;
+    }
+    
+    // Get current total weight in inventory
+    public float GetCurrentWeight()
+    {
+        float totalWeight = 0f;
+        foreach (var resource in resources)
+        {
+            totalWeight += resource.amount * resource.inventoryWeight;
+        }
+        return totalWeight;
     }
     
     // Get total fill percentage across all resources (for overall storage bar).
     public float GetTotalFillPercentage()
     {
-        int totalAmount = 0;
-        int totalCapacity = 0;
-        
-        foreach (var resource in resources)
-        {
-            totalAmount += resource.amount;
-            totalCapacity += resource.maxCapacity;
-        }
-        
-        return totalCapacity > 0 ? (float)totalAmount / totalCapacity : 0f;
+        return maxInventoryCapacity > 0 ? GetCurrentWeight() / maxInventoryCapacity : 0f;
     }
     
     // Clear all resources (for new game, death, etc).
