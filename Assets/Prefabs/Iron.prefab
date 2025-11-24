@@ -127,7 +127,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OreNode
   oreType: 8
-  resourceAmount: 20
-  checkRadius: 0.01
+  resourceAmount: 1
   checkInterval: 0.5
+  checkRadius: 0.01
+  pointsRequiredEmpty: 5
   effectiveVoxelSize: 1

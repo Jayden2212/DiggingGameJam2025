@@ -25,6 +25,12 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        GameObject spawnPoint = GameObject.Find("SpawnPoint");
+        if (spawnPoint != null)
+        {
+            transform.position = spawnPoint.transform.position;
+            transform.rotation = spawnPoint.transform.rotation;
+        }
         rb = GetComponent<Rigidbody>();
         readyToJump = true;
     }
