@@ -1,10 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-/// <summary>
-/// Manages player XP and skill points for tool upgrades.
-/// Gain XP by mining ores, level up to earn skill points.
-/// </summary>
+// Manages player XP and skill points for tool upgrades.
+// Gain XP by mining ores, level up to earn skill points.
 public class PlayerProgression : MonoBehaviour
 {
     [Header("XP System")]
@@ -89,6 +87,12 @@ public class PlayerProgression : MonoBehaviour
         int xpRequired = GetXPRequiredForNextLevel();
         currentXP -= xpRequired; // Subtract only what was needed, keep overflow
         level++;
+        
+        // Play level up sound
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayLevelUp();
+        }
         
         // Grant skill points
         skillPoints += skillPointsPerLevel;

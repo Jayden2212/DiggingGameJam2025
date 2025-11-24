@@ -531,6 +531,12 @@ public class DigTool : MonoBehaviour
                     SpawnDigEffect(layer.digEffectPrefab, hit.point, hit.normal);
                 }
                 
+                // Play dig sound
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayDig();
+                }
+                
                 // Add only terrain/rubble to inventory (ores are handled by OreNode prefabs)
                 // Process items one at a time until inventory is full
                 if (playerInventory != null && minedVoxels != null)

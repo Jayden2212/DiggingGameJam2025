@@ -56,6 +56,12 @@ public class ButtonUpgrade : MonoBehaviour
         if (upgraded)
         {
             progression.SpendSkillPoint();
+            
+            // Play upgrade sound
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayUpgrade();
+            }
         }
     }
 

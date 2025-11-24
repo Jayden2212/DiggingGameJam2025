@@ -2,9 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// Updates UI to display player level, skill points, and XP progress as a circular fill.
-/// </summary>
+// Updates UI to display player level, skill points, and XP progress as a circular fill.
 public class PlayerProgressionUI : MonoBehaviour
 {
     [Header("References")]

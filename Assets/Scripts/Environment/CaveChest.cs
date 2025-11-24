@@ -84,6 +84,12 @@ public class CaveChest : MonoBehaviour, IInteractable
                 : $"Congrats! You won in {finalTime}! You now have infinite upgrades";
             notificationSystem.ShowNotification(message, Color.green, persistent: false, duration: 6f);
         }
+        
+        // Play victory sound
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayVictory();
+        }
     }
     
     public void ShowPrompt()

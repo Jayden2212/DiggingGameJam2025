@@ -40,9 +40,15 @@ public class SellingStation : MonoBehaviour, IInteractable
             // Hide the interaction prompt when opening the menu
             HidePrompt();
             
+            // Play menu open sound
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayMenuOpen();
+            }
+            
             if (popUpSystem != null)
             {
-                popUpSystem.PopUp("SELL YOUR MATERIALS HERE");
+                popUpSystem.PopUp("SELLING YOUR MATERIALS HERE");
             }
         }
     }
@@ -109,9 +115,15 @@ public class SellingStation : MonoBehaviour, IInteractable
         {
             Debug.Log($"Sold {totalItemsSold} items for {totalXP} XP!");
             
+            // Play sell sound
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySell();
+            }
+            
             if (popUpSystem != null)
             {
-                popUpSystem.PopUp($"SOLD {totalItemsSold} ITEMS!\n+{totalXP} XP");
+                popUpSystem.PopUp($"SOLD!\n+{totalXP} XP");
             }
         }
         else

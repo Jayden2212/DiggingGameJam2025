@@ -4836,8 +4836,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
   orientation: {fileID: 1388197252}
-  sensX: 5
-  sensY: 5
 --- !u!114 &870339656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8394,7 +8392,6 @@ MonoBehaviour:
   popUpBox: {fileID: 1693906668}
   popUpText: {fileID: 263854369}
   controller: {fileID: 765219808}
-  playerCam: {fileID: 870339655}
   swing: {fileID: 96435162}
   digTool: {fileID: 1607102722}
 --- !u!114 &1693906671
@@ -9525,7 +9522,6 @@ MonoBehaviour:
   popUpBox: {fileID: 1919078618}
   popUpText: {fileID: 359329415}
   controller: {fileID: 765219808}
-  playerCam: {fileID: 870339655}
   swing: {fileID: 96435162}
   digTool: {fileID: 1607102722}
 --- !u!114 &1919078621
@@ -9677,6 +9673,60 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1922095221}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1922808955
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1922808957}
+  - component: {fileID: 1922808956}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1922808956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1922808955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8884f83ab8720b4d8a57cbe603b0114, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  sfxSource: {fileID: 0}
+  musicSource: {fileID: 0}
+  victorySound: {fileID: 8300000, guid: 0f59414cc7be2e345880da8bff9e1044, type: 3}
+  menuOpenSound: {fileID: 8300000, guid: fafc5bcc281e1445abaadfc807d24919, type: 3}
+  digSound: {fileID: 8300000, guid: f6be7e565b07444189b6c4a35ecba196, type: 3}
+  levelUpSound: {fileID: 8300000, guid: 8a82a5ab43b4d4315a06a11912b497ac, type: 3}
+  sellSound: {fileID: 8300000, guid: ee8081578f04e4b9cb8640a0194dbc8a, type: 3}
+  upgradeSound: {fileID: 8300000, guid: 2db8ea50f9e084a188fd8475c0618c09, type: 3}
+  sfxVolume: 0.6
+  musicVolume: 0.5
+--- !u!4 &1922808957
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1922808955}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1943057791 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7326308086656437384, guid: 81d960fe44e3f6b46bcda7b24988e254, type: 3}
@@ -11090,6 +11140,7 @@ CanvasRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1922808957}
   - {fileID: 1041825881}
   - {fileID: 1709999943}
   - {fileID: 99197232}

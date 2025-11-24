@@ -40,6 +40,12 @@ public class UpgradeStation : MonoBehaviour, IInteractable
             // Hide the interaction prompt when opening the menu
             HidePrompt();
             
+            // Play menu open sound
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayMenuOpen();
+            }
+            
             UpdateUpgradeUI();
             pop.PopUp("MINE AND SELL MATERIALS FOR POINTS");
         }
