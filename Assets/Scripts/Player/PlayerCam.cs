@@ -7,8 +7,8 @@ public class PlayerCam : MonoBehaviour
     public Transform orientation;
 
     [Header("Camera Settings")]
-    public static float sensX = 5f;
-    public static float sensY = 5f;
+    public float sensX = 5f;
+    public float sensY = 5f;
     private Vector2 mouseInput;
     float xRotation, yRotation;
 

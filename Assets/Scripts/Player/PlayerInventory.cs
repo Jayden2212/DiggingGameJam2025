@@ -174,10 +174,20 @@ public class PlayerInventory : MonoBehaviour
         return false;
     }
     
-    // Check if inventory has any space at all
+    // Check if inventory has any space at all (even a tiny bit)
     public bool HasAnySpace()
     {
         return GetCurrentWeight() < maxInventoryCapacity;
+    }
+    
+    // Check if inventory is completely full (can't fit the smallest item)
+    public bool IsFull()
+    {
+        float currentWeight = GetCurrentWeight();
+        float minimumItemWeight = 0.1f; // Smallest possible item (rubble)
+        float availableSpace = maxInventoryCapacity - currentWeight;
+        // Check if we can fit at least one smallest item (with tiny epsilon for floating point)
+        return availableSpace < minimumItemWeight - 0.001f;
     }
     
     // Get current total weight in inventory

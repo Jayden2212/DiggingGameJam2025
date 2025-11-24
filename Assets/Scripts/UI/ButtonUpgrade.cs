@@ -7,6 +7,7 @@ public class ButtonUpgrade : MonoBehaviour
         DigTool digTool = FindFirstObjectByType<DigTool>();
         PlayerProgression progression = FindFirstObjectByType<PlayerProgression>();
         PlayerInventory inventory = FindFirstObjectByType<PlayerInventory>();
+        PopUpSystem popUpSystem = FindFirstObjectByType<PopUpSystem>();
         
         if (digTool == null)
         {
@@ -16,7 +17,10 @@ public class ButtonUpgrade : MonoBehaviour
         
         if (progression == null || !progression.HasSkillPoints())
         {
-            Debug.LogWarning("Not enough skill points!");
+            if (popUpSystem != null)
+            {
+                popUpSystem.popUpText.text = "NOT ENOUGH SKILL POINTS";
+            }
             return;
         }
         

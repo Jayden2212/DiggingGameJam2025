@@ -39,8 +39,8 @@ public class Swing : MonoBehaviour
             anim.speed = digTool.attackSpeed;
         }
         
-        // Don't swing if inventory is full
-        if (playerInventory != null && !playerInventory.HasAnySpace())
+        // Don't swing if inventory is completely full
+        if (playerInventory != null && playerInventory.IsFull())
         {
             return;
         }
@@ -79,8 +79,8 @@ public class Swing : MonoBehaviour
 
     private void OnClickPerformed(InputAction.CallbackContext ctx)
     {
-        // Don't swing if inventory is full
-        if (playerInventory != null && !playerInventory.HasAnySpace())
+        // Don't swing if inventory is completely full
+        if (playerInventory != null && playerInventory.IsFull())
         {
             return;
         }
@@ -100,6 +100,19 @@ public class Swing : MonoBehaviour
     // Add this as an Animation Event in your Mining animation at 50% completion
     public void OnSwingHit()
     {
+        // Don't trigger hit if inventory is full
+        if (playerInventory != null && playerInventory.IsFull())
+        {
+            Debug.Log("OnSwingHit: Inventory is full, blocking hit!");
+            // Trigger the inventory full notification from DigTool
+            if (digTool != null)
+            {
+                digTool.TriggerInventoryFullMessage();
+            }
+            return;
+        }
+        
+        Debug.Log("OnSwingHit: Triggering hit");
         if (digTool != null)
         {
             digTool.TriggerHitFromAnimation();

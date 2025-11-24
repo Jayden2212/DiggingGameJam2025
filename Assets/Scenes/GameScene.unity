@@ -593,6 +593,7 @@ GameObject:
   - component: {fileID: 198473170}
   - component: {fileID: 198473172}
   - component: {fileID: 198473171}
+  - component: {fileID: 198473173}
   m_Layer: 5
   m_Name: EXPBackground
   m_TagString: Untagged
@@ -609,7 +610,7 @@ RectTransform:
   m_GameObject: {fileID: 198473169}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9454926, y: 0.9454926, z: 0.9454926}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 350289672}
@@ -618,7 +619,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -95, y: -75}
+  m_AnchoredPosition: {x: -89, y: -72}
   m_SizeDelta: {x: 190, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &198473171
@@ -659,6 +660,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 198473169}
   m_CullTransparentMesh: 1
+--- !u!114 &198473173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198473169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1daef3a25ef10c46ac0f1610935c93a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerProgressionUI
+  playerProgression: {fileID: 765219812}
+  xpFillImage: {fileID: 1970599901}
+  levelText: {fileID: 350289673}
+  xpText: {fileID: 0}
+  showLevelOnly: 1
 --- !u!1 &295713345
 GameObject:
   m_ObjectHideFlags: 0
@@ -2547,7 +2565,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f832288ca252235478713129aa67b29b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
-  maxInventoryCapacity: 200
+  maxInventoryCapacity: 100
   resources: []
   onResourceAdded:
     m_PersistentCalls:
@@ -3124,6 +3142,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
   orientation: {fileID: 1388197252}
+  sensX: 5
+  sensY: 5
 --- !u!114 &870339656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5162,7 +5182,7 @@ MonoBehaviour:
   totalUpgrades: 0
   digCursorPrefab: {fileID: 0}
   playerInventory: {fileID: 765219811}
-  popUpSystem: {fileID: 0}
+  notificationSystem: {fileID: 0}
   pointAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   digAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   aimMode: 1
@@ -5824,6 +5844,7 @@ MonoBehaviour:
   popUpBox: {fileID: 1693906668}
   popUpText: {fileID: 1268440615}
   controller: {fileID: 765219808}
+  playerCam: {fileID: 870339655}
   swing: {fileID: 96435162}
   digTool: {fileID: 1607102722}
 --- !u!114 &1693906671
@@ -6561,6 +6582,7 @@ MonoBehaviour:
   popUpBox: {fileID: 1919078618}
   popUpText: {fileID: 1639273720}
   controller: {fileID: 765219808}
+  playerCam: {fileID: 870339655}
   swing: {fileID: 96435162}
   digTool: {fileID: 1607102722}
 --- !u!114 &1919078621

@@ -82,10 +82,10 @@ public class DigTool : MonoBehaviour
     public PlayerInventory playerInventory;
     
     [Header("UI")]
-    [Tooltip("Popup system to show inventory full message. If null, will search for it.")]
-    public PopUpSystem popUpSystem;
+    [Tooltip("Notification system to show inventory full message. If null, will search for it.")]
+    public NotificationSystem notificationSystem;
     
-    private bool inventoryFullShown = false; // Track if we've shown the popup this session
+    private bool inventoryFullShown = false; // Track if we've shown the notification this session
     
     private Camera mainCamera;
     
@@ -115,10 +115,18 @@ public class DigTool : MonoBehaviour
             }
         }
         
-        // Find popup system if not assigned
-        if (popUpSystem == null)
+        // Find notification system if not assigned
+        if (notificationSystem == null)
         {
-            popUpSystem = FindFirstObjectByType<PopUpSystem>();
+            notificationSystem = FindFirstObjectByType<NotificationSystem>();
+            if (notificationSystem == null)
+            {
+                Debug.LogWarning("NotificationSystem not found! Inventory full messages won't display.");
+            }
+            else
+            {
+                Debug.Log("NotificationSystem found successfully!");
+            }
         }
         
         // Subscribe to inventory events
@@ -484,17 +492,19 @@ public class DigTool : MonoBehaviour
     
     private void PerformPickaxeHit(RaycastHit hit)
     {
-        // Check if inventory is full
-        if (playerInventory != null && !playerInventory.HasAnySpace())
+        // Don't dig if inventory is completely full
+        if (playerInventory != null && playerInventory.IsFull())
         {
+            Debug.Log($"PerformPickaxeHit: Inventory FULL! Weight: {playerInventory.GetCurrentWeight()}/{playerInventory.maxInventoryCapacity}");
             if (!inventoryFullShown)
             {
                 inventoryFullShown = true;
                 ShowInventoryFullPopup();
             }
-            return; // Don't dig if inventory is full
+            return;
         }
         
+        Debug.Log($"PerformPickaxeHit: Inventory has space. Weight: {playerInventory.GetCurrentWeight()}/{playerInventory.maxInventoryCapacity}");
         TerrainChunk chunk = hit.collider.GetComponent<TerrainChunk>();
         if (chunk != null)
         {
@@ -523,6 +533,7 @@ public class DigTool : MonoBehaviour
                 // Add only terrain/rubble to inventory (ores are handled by OreNode prefabs)
                 if (playerInventory != null && minedVoxels != null)
                 {
+                    bool anyItemsAdded = false;
                     foreach (var kvp in minedVoxels)
                     {
                         VoxelType voxelType = kvp.Key;
@@ -531,8 +542,16 @@ public class DigTool : MonoBehaviour
                         // Only add non-ore terrain types (rubble)
                         if (voxelType != VoxelType.Air && !IsOreType(voxelType))
                         {
-                            playerInventory.AddResource(voxelType, count);
+                            int added = playerInventory.AddResource(voxelType, count);
+                            if (added > 0) anyItemsAdded = true;
                         }
+                    }
+                    
+                    // Show message if inventory is full and nothing could be added
+                    if (!anyItemsAdded && !inventoryFullShown)
+                    {
+                        inventoryFullShown = true;
+                        ShowInventoryFullPopup();
                     }
                 }
             }
@@ -544,6 +563,7 @@ public class DigTool : MonoBehaviour
                 // Add only terrain/rubble to inventory (ores are handled by OreNode prefabs)
                 if (playerInventory != null && minedVoxels != null)
                 {
+                    bool anyItemsAdded = false;
                     foreach (var kvp in minedVoxels)
                     {
                         VoxelType voxelType = kvp.Key;
@@ -552,8 +572,16 @@ public class DigTool : MonoBehaviour
                         // Only add non-ore terrain types (rubble)
                         if (voxelType != VoxelType.Air && !IsOreType(voxelType))
                         {
-                            playerInventory.AddResource(voxelType, count);
+                            int added = playerInventory.AddResource(voxelType, count);
+                            if (added > 0) anyItemsAdded = true;
                         }
+                    }
+                    
+                    // Show message if inventory is full and nothing could be added
+                    if (!anyItemsAdded && !inventoryFullShown)
+                    {
+                        inventoryFullShown = true;
+                        ShowInventoryFullPopup();
                     }
                 }
             }
@@ -602,17 +630,31 @@ public class DigTool : MonoBehaviour
     }
     
     /// <summary>
-    /// Shows popup when inventory is full.
+    /// Public method to trigger inventory full message (called from Swing when blocking a hit)
+    /// </summary>
+    public void TriggerInventoryFullMessage()
+    {
+        if (!inventoryFullShown)
+        {
+            inventoryFullShown = true;
+            ShowInventoryFullPopup();
+        }
+    }
+    
+    /// <summary>
+    /// Shows notification when inventory is full.
     /// </summary>
     private void ShowInventoryFullPopup()
     {
-        if (popUpSystem != null)
+        Debug.Log("ShowInventoryFullPopup called!");
+        if (notificationSystem != null)
         {
-            popUpSystem.PopUp("You cannot hold any more resources.\nGo to the truck and sell.\n(Press 'T' to teleport)");
+            Debug.Log("Showing notification via NotificationSystem");
+            notificationSystem.ShowNotification("Inventory Full!\nGo to the truck and sell (Press 'T' to teleport)");
         }
         else
         {
-            Debug.LogWarning("Inventory full! Go to the truck and sell (Press 'T' to teleport)");
+            Debug.LogWarning("NotificationSystem is null! Inventory full! Go to the truck and sell (Press 'T' to teleport)");
         }
     }
 }
