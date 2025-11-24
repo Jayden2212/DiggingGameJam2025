@@ -15,5 +15,11 @@ public class SliderController : MonoBehaviour
             AudioSource audio = GameObject.Find("AudioHolder").GetComponent<AudioSource>();
             audio.volume = localValue;
         }
+        else if (gameObject.name.Equals("SensitivitySlider"))
+        {
+            PlayerCam.sensX = localValue;
+            PlayerCam.sensY = localValue;
+        }
+
     }
 }
