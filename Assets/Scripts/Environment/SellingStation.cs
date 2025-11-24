@@ -96,10 +96,7 @@ public class SellingStation : MonoBehaviour, IInteractable
             }
         }
     }
-    
-    /// <summary>
-    /// Sells a specific resource type.
-    /// </summary>
+
     public void SellResource(VoxelType resourceType, int amount)
     {
         if (inventory == null || progression == null) return;

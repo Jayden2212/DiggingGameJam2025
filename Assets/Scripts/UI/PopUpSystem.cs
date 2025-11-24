@@ -10,13 +10,19 @@ public class PopUpSystem : MonoBehaviour
     public DigTool digTool;
 
     float tempSensX, tempSensY, tempMovementSpeed, tempJumpForce;
+    bool valuesStored = false;
 
     void GetTempValues()
     {
-        tempSensX = PlayerCam.sensX;
-        tempSensY = PlayerCam.sensY;
-        tempMovementSpeed = controller.movementSpeed;
-        tempJumpForce = controller.jumpForce;
+        // Only store values if not already stored (prevent overwriting with zeroed values)
+        if (!valuesStored)
+        {
+            tempSensX = PlayerCam.sensX;
+            tempSensY = PlayerCam.sensY;
+            tempMovementSpeed = controller.movementSpeed;
+            tempJumpForce = controller.jumpForce;
+            valuesStored = true;
+        }
     }
 
     public void PopUp(string text)
@@ -58,5 +64,8 @@ public class PopUpSystem : MonoBehaviour
             digTool.enabled = true;
 
         popUpBox.SetActive(false);
+        
+        // Reset flag so values can be stored again next time
+        valuesStored = false;
     }
 }
