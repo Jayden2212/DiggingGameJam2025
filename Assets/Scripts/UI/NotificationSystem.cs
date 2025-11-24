@@ -2,9 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 
-/// <summary>
-/// Displays temporary notification messages at the bottom of the screen without interrupting gameplay.
-/// </summary>
+// Displays temporary notification messages at the bottom of the screen without interrupting gameplay.
 public class NotificationSystem : MonoBehaviour
 {
     [Header("UI References")]

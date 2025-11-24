@@ -961,6 +961,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80a9eef6285224f0cb0da3af28df851d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettingsDuringGame
+  SettingScreenCanvas: {fileID: 0}
+  controller: {fileID: 0}
+  playerCam: {fileID: 0}
+  swing: {fileID: 0}
+  digTool: {fileID: 0}
 --- !u!1 &263854367
 GameObject:
   m_ObjectHideFlags: 0
@@ -3964,6 +3969,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 603f4792e4c2c41e6b3188092716164e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  isEnabled: 1
   orientation: {fileID: 1388197252}
   pausedPopUp: {fileID: 1582577836}
   movementSpeed: 5
@@ -5120,6 +5126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
   orientation: {fileID: 1388197252}
+  isEnabled: 1
 --- !u!114 &870339656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8256,10 +8263,10 @@ MonoBehaviour:
   digDistance: 4
   attackSpeed: 1
   toolTier: 0
-  upgradesPerTier: 5
+  upgradesPerTier: 10
   strengthUpgradeAmount: 5
-  radiusUpgradeAmount: 1
-  distanceUpgradeAmount: 1
+  radiusUpgradeAmount: 0.1
+  distanceUpgradeAmount: 0.5
   attackSpeedUpgradeAmount: 0.5
   strengthUpgradeLevel: 0
   radiusUpgradeLevel: 0

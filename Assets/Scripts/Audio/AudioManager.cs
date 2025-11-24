@@ -84,7 +84,7 @@ public class AudioManager : MonoBehaviour
     public void PlayVictory(float volumeScale = 0.65f) => PlaySound(victorySound, volumeScale);
     public void PlayMenuOpen(float volumeScale = 3f) => PlaySound(menuOpenSound, volumeScale);
     public void PlayDig(float volumeScale = 0.625f) => PlaySound(digSound, volumeScale);
-    public void PlayLevelUp(float volumeScale = 0.2f) => PlaySound(levelUpSound, volumeScale);
+    public void PlayLevelUp(float volumeScale = 0.35f) => PlaySound(levelUpSound, volumeScale);
     public void PlaySell(float volumeScale = 1f) => PlaySound(sellSound, volumeScale);
     public void PlayUpgrade(float volumeScale = 1f) => PlaySound(upgradeSound, volumeScale);
 
