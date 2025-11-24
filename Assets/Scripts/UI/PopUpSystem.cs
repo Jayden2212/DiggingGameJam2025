@@ -5,7 +5,6 @@ public class PopUpSystem : MonoBehaviour
 {
     public GameObject popUpBox;
     public TMP_Text popUpText;
-    public PlayerCam cam;
     public PlayerController controller;
     public Swing swing;
     public DigTool digTool;
@@ -14,8 +13,8 @@ public class PopUpSystem : MonoBehaviour
 
     void GetTempValues()
     {
-        tempSensX = cam.sensX;
-        tempSensY = cam.sensY;
+        tempSensX = PlayerCam.sensX;
+        tempSensY = PlayerCam.sensY;
         tempMovementSpeed = controller.movementSpeed;
         tempJumpForce = controller.jumpForce;
     }
@@ -27,8 +26,8 @@ public class PopUpSystem : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        cam.sensX = 0f;
-        cam.sensY = 0f;
+        PlayerCam.sensX = 0f;
+        PlayerCam.sensY = 0f;
         controller.movementSpeed = 0f;
         controller.jumpForce = 0f;
         
@@ -47,8 +46,8 @@ public class PopUpSystem : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        cam.sensX = tempSensX;
-        cam.sensY = tempSensY;
+        PlayerCam.sensX = tempSensX;
+        PlayerCam.sensY = tempSensY;
         controller.movementSpeed = tempMovementSpeed;
         controller.jumpForce = tempJumpForce;
         
