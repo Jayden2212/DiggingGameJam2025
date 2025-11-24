@@ -237,7 +237,7 @@ public class DigTool : MonoBehaviour
     }
     
     // Increments total upgrades and checks if tool tier should increase
-    private void IncrementTotalUpgrades()
+    public void IncrementTotalUpgrades()
     {
         totalUpgrades++;
         

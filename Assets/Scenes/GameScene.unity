@@ -1271,20 +1271,20 @@ MonoBehaviour:
   - oreType: 8
     threshold: 0.2
     scale: 0.465
-    minY: 20
+    minY: 18
     maxY: 30
     seedOffset: 50
   - oreType: 9
     threshold: 0.2
     scale: 0.465
-    minY: 20
-    maxY: 30
+    minY: 13
+    maxY: 25
     seedOffset: 50
   - oreType: 10
     threshold: 0.2
     scale: 0.465
-    minY: 20
-    maxY: 30
+    minY: 5
+    maxY: 18
     seedOffset: 50
   - oreType: 11
     threshold: 0.2

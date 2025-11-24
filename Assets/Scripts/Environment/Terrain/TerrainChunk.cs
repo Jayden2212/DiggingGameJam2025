@@ -249,7 +249,14 @@ public class TerrainChunk : MonoBehaviour
             {
                 orePrefabDict[mapping.oreType] = mapping.prefab;
             }
+            else
+            {
+                Debug.LogWarning($"Ore prefab for {mapping.oreType} is null!");
+            }
         }
+        
+        // Count ores found in voxel data (before spawning)
+        Dictionary<VoxelType, int> oreCountsInData = new Dictionary<VoxelType, int>();
 
         // Use the actual array sizes to avoid off-by-one / ChunkSize mismatch
         int sizeX = voxelData.voxelTypes.GetLength(0);
@@ -274,6 +281,15 @@ public class TerrainChunk : MonoBehaviour
 
                     VoxelType vt = voxelData.voxelTypes[x, y, z];
                     
+                    // Count all ores in voxel data
+                    if (vt == VoxelType.CopperOre || vt == VoxelType.IronOre || vt == VoxelType.GoldOre || 
+                        vt == VoxelType.AmethystOre || vt == VoxelType.DiamondOre)
+                    {
+                        if (!oreCountsInData.ContainsKey(vt))
+                            oreCountsInData[vt] = 0;
+                        oreCountsInData[vt]++;
+                    }
+                    
                     // Check if this voxel type is an ore with a prefab
                     if (orePrefabDict.ContainsKey(vt))
                     {
@@ -294,6 +310,14 @@ public class TerrainChunk : MonoBehaviour
                 }
             }
         }
+        
+        // Log ore counts
+        Debug.Log("=== ORE GENERATION REPORT ===");
+        foreach (var kvp in oreCountsInData)
+        {
+            Debug.Log($"{kvp.Key}: {kvp.Value} voxels found in data");
+        }
+        Debug.Log($"Total ore nodes spawned: {oreNodes.Count}");
     }
     
     public void RegenerateMesh()

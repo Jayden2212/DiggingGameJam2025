@@ -47,6 +47,7 @@ public class ButtonUpgrade : MonoBehaviour
             if (inventory != null)
             {
                 inventory.maxInventoryCapacity += inventory.inventoryCapacityIncrement;
+                digTool.IncrementTotalUpgrades();
                 upgraded = true;
                 Debug.Log($"Storage upgraded! New capacity: {inventory.maxInventoryCapacity}");
             }
