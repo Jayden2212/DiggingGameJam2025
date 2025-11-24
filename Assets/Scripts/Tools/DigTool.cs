@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 /// <summary>
 /// Pickaxe tool for mining terrain with discrete hits.
@@ -76,6 +77,10 @@ public class DigTool : MonoBehaviour
     public GameObject digCursorPrefab; // Optional: sphere to show dig location
     private GameObject digCursor;
     
+    [Header("Inventory")]
+    [Tooltip("Player inventory to add mined resources to. If null, will search for it.")]
+    public PlayerInventory playerInventory;
+    
     private Camera mainCamera;
     
     [Header("Input")]
@@ -93,6 +98,16 @@ public class DigTool : MonoBehaviour
     {
         mainCamera = Camera.main;
         Debug.Log("mainCamera: " + mainCamera);
+        
+        // Find PlayerInventory if not assigned
+        if (playerInventory == null)
+        {
+            playerInventory = FindFirstObjectByType<PlayerInventory>();
+            if (playerInventory == null)
+            {
+                Debug.LogWarning("PlayerInventory not found! Resources won't be collected.");
+            }
+        }
         
         // Store base values for upgrade calculations
         baseStrength = digStrength;
@@ -468,16 +483,58 @@ public class DigTool : MonoBehaviour
                 
                 // Apply hardness multiplier to dig strength (single hit damage)
                 float effectiveStrength = digStrength / layer.hardness;
-                chunk.DigAtPosition(hit.point, digRadius, effectiveStrength);
+                Dictionary<VoxelType, int> minedVoxels = chunk.DigAtPosition(hit.point, digRadius, effectiveStrength);
+                
+                // Add only terrain/rubble to inventory (ores are handled by OreNode prefabs)
+                if (playerInventory != null && minedVoxels != null)
+                {
+                    foreach (var kvp in minedVoxels)
+                    {
+                        VoxelType voxelType = kvp.Key;
+                        int count = kvp.Value;
+                        
+                        // Only add non-ore terrain types (rubble)
+                        if (voxelType != VoxelType.Air && !IsOreType(voxelType))
+                        {
+                            playerInventory.AddResource(voxelType, count);
+                        }
+                    }
+                }
             }
             else
             {
                 // No layer info, use default strength
-                chunk.DigAtPosition(hit.point, digRadius, digStrength);
+                Dictionary<VoxelType, int> minedVoxels = chunk.DigAtPosition(hit.point, digRadius, digStrength);
+                
+                // Add only terrain/rubble to inventory (ores are handled by OreNode prefabs)
+                if (playerInventory != null && minedVoxels != null)
+                {
+                    foreach (var kvp in minedVoxels)
+                    {
+                        VoxelType voxelType = kvp.Key;
+                        int count = kvp.Value;
+                        
+                        // Only add non-ore terrain types (rubble)
+                        if (voxelType != VoxelType.Air && !IsOreType(voxelType))
+                        {
+                            playerInventory.AddResource(voxelType, count);
+                        }
+                    }
+                }
             }
             
             // TODO: Play pickaxe swing sound/animation
             // TODO: Spawn hit particles at hit.point
         }
+    }
+    
+    // Helper to check if a voxel type is an ore
+    private bool IsOreType(VoxelType type)
+    {
+        return type == VoxelType.CopperOre ||
+               type == VoxelType.IronOre ||
+               type == VoxelType.GoldOre ||
+               type == VoxelType.AmethystOre ||
+               type == VoxelType.DiamondOre;
     }
 }

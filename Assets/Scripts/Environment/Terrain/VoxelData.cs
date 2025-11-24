@@ -285,8 +285,10 @@ public class VoxelData
         return VoxelType.Granite;
     }
     
-    public void ModifyDensity(Vector3 localPosition, float radius, float strength)
+    public Dictionary<VoxelType, int> ModifyDensity(Vector3 localPosition, float radius, float strength)
     {
+        Dictionary<VoxelType, int> minedVoxels = new Dictionary<VoxelType, int>();
+        
         // Arrays are sized (ChunkSize+1, ChunkHeight+1, ChunkSize+1), so max indices are inclusive
         int minX = Mathf.Max(0, Mathf.FloorToInt(localPosition.x - radius));
         int maxX = Mathf.Min(ChunkSize, Mathf.CeilToInt(localPosition.x + radius));
@@ -315,11 +317,25 @@ public class VoxelData
                         // If we dug through solid terrain
                         if (oldDensity > 0 && densityMap[x, y, z] <= 0)
                         {
+                            VoxelType minedType = voxelTypes[x, y, z];
+                            
+                            // Track what was mined
+                            if (minedVoxels.ContainsKey(minedType))
+                            {
+                                minedVoxels[minedType]++;
+                            }
+                            else
+                            {
+                                minedVoxels[minedType] = 1;
+                            }
+                            
                             voxelTypes[x, y, z] = VoxelType.Air;
                         }
                     }
                 }
             }
         }
+        
+        return minedVoxels;
     }
 }

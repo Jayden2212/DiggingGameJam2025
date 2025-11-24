@@ -309,18 +309,19 @@ public class TerrainChunk : MonoBehaviour
         }
     }
     
-    public void DigAtPosition(Vector3 worldPosition, float radius, float strength)
+    public Dictionary<VoxelType, int> DigAtPosition(Vector3 worldPosition, float radius, float strength)
     {
         Vector3 localPos = transform.InverseTransformPoint(worldPosition);
         localPos /= VoxelData.VoxelSize;
         if (voxelData == null)
         {
             Debug.LogWarning("DigAtPosition called but voxelData is null.");
-            return;
+            return null;
         }
 
-        voxelData.ModifyDensity(localPos, radius, strength);
+        Dictionary<VoxelType, int> minedVoxels = voxelData.ModifyDensity(localPos, radius, strength);
         RegenerateMesh();
+        return minedVoxels;
     }
     
     // Check if a world position is inside solid terrain

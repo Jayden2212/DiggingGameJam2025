@@ -16,6 +16,20 @@ public class PlayerCam : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        
+        // Initialize camera rotation to match SpawnPoint
+        GameObject spawnPoint = GameObject.Find("SpawnPoint");
+        if (spawnPoint != null)
+        {
+            Vector3 spawnRot = spawnPoint.transform.rotation.eulerAngles;
+            xRotation = spawnRot.x;
+            yRotation = spawnRot.y;
+            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            if (orientation != null)
+            {
+                orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+            }
+        }
     }
 
     void Update()
@@ -34,5 +48,22 @@ public class PlayerCam : MonoBehaviour
     public void OnLook(InputValue val)
     {
         mouseInput = val.Get<Vector2>();
+    }
+    
+    // Call this method to reset camera rotation to SpawnPoint (e.g., when teleporting)
+    public void ResetToSpawnPoint()
+    {
+        GameObject spawnPoint = GameObject.Find("SpawnPoint");
+        if (spawnPoint != null)
+        {
+            Vector3 spawnRot = spawnPoint.transform.rotation.eulerAngles;
+            xRotation = spawnRot.x;
+            yRotation = spawnRot.y;
+            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            if (orientation != null)
+            {
+                orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+            }
+        }
     }
 }
