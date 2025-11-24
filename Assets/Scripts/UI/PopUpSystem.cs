@@ -7,6 +7,8 @@ public class PopUpSystem : MonoBehaviour
     public TMP_Text popUpText;
     public PlayerCam cam;
     public PlayerController controller;
+    public Swing swing;
+    public DigTool digTool;
 
     float tempSensX, tempSensY, tempMovementSpeed, tempJumpForce;
 
@@ -29,6 +31,12 @@ public class PopUpSystem : MonoBehaviour
         cam.sensY = 0f;
         controller.movementSpeed = 0f;
         controller.jumpForce = 0f;
+        
+        // Disable digging animation and tool
+        if (swing != null)
+            swing.enabled = false;
+        if (digTool != null)
+            digTool.enabled = false;
 
         popUpBox.SetActive(true);
         popUpText.text = text;
@@ -43,6 +51,12 @@ public class PopUpSystem : MonoBehaviour
         cam.sensY = tempSensY;
         controller.movementSpeed = tempMovementSpeed;
         controller.jumpForce = tempJumpForce;
+        
+        // Re-enable digging animation and tool
+        if (swing != null)
+            swing.enabled = true;
+        if (digTool != null)
+            digTool.enabled = true;
 
         popUpBox.SetActive(false);
     }

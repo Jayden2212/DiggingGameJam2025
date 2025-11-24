@@ -3997,11 +3997,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.023062913, y: 0.04633415, z: 0.13387512}
   m_Center: {x: 0.00083751045, y: -0.015422505, z: -0.030192003}
---- !u!4 &1500217087 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6842728296405949254, guid: df3ea83dd3ba2d14fb0bb76d118f9a66, type: 3}
-  m_PrefabInstance: {fileID: 1239619747}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1452664393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4052,6 +4047,11 @@ RectTransform:
   m_AnchoredPosition: {x: 15.5, y: 162.02}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.49999997}
+--- !u!4 &1500217087 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6842728296405949254, guid: df3ea83dd3ba2d14fb0bb76d118f9a66, type: 3}
+  m_PrefabInstance: {fileID: 1239619747}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1504390757
 GameObject:
   m_ObjectHideFlags: 0
@@ -5549,8 +5549,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopUpSystem
   popUpBox: {fileID: 1919078618}
   popUpText: {fileID: 1639273720}
-  cam: {fileID: 0}
-  controller: {fileID: 0}
+  cam: {fileID: 870339655}
+  controller: {fileID: 765219808}
 --- !u!114 &1919078621
 MonoBehaviour:
   m_ObjectHideFlags: 0
