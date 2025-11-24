@@ -6,8 +6,8 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     Vector2 movementVector;
 
-    [SerializeField]
-    private Transform orientation;
+    [SerializeField] private Transform orientation;
+    [SerializeField] private PopUpSystem pausedPopUp;
 
     [Header("Movement Settings")]
     public float movementSpeed;
@@ -73,6 +73,11 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(movement.normalized * movementSpeed * 10f * airMultiplier, ForceMode.Force);
         }
+    }
+
+    public void OnPaused()
+    {
+        pausedPopUp.PopUp("");
     }
 
     public void OnMove(InputValue val)

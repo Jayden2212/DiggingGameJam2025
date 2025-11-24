@@ -5874,8 +5874,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c3890e98128b456eb95783e8641b1f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Settings
-  SettingScreenCanvas: {fileID: 1681954846}
   TitleScreenCanvas: {fileID: 802071686}
+  SettingScreenCanvas: {fileID: 1681954846}
 --- !u!114 &2021695114
 MonoBehaviour:
   m_ObjectHideFlags: 0

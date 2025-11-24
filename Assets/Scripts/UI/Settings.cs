@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Settings : MonoBehaviour
 {
-    public GameObject SettingScreenCanvas;
     public GameObject TitleScreenCanvas;
+    public GameObject SettingScreenCanvas;
     public void OpenSettingsScreen()
     {
         TitleScreenCanvas.SetActive(false);
