@@ -26,4 +26,9 @@ public class ButtonUpgrade : MonoBehaviour
             Debug.Log("Storage");
         }
     }
+
+    public void Sell()
+    {
+        Debug.Log("Sell");
+    }
 }
